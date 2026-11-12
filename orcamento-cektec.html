@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orçamento — CEKTEC Perfilados</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14161c;
+    --paper:#f6f4ee;
+    --panel:#ffffff;
+    --line:#e2ded3;
+    --line-strong:#c7bfac;
+    --accent:#ff5a1f;
+    --accent-2:#ffb020;
+    --accent-dark:#c2410c;
+    --accent-tint:#fff0e6;
+    --muted:#867f72;
+    --steel:#0e7490;
+    --steel-tint:#e4f4f7;
+    --good:#0e7490;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1000px;margin:0 auto;padding:36px 24px 80px;}
+
+  /* ---------- toolbar (screen only) ---------- */
+  .toolbar{
+    position:sticky; top:0; z-index:20;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; padding:14px 24px;
+    background:rgba(251,250,247,0.92);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  .toolbar .brandmark{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px;
+    letter-spacing:0.02em; color:var(--ink); display:flex; align-items:center; gap:8px;
+  }
+  .brandmark .dot{width:9px;height:9px;border-radius:2px;background:linear-gradient(135deg,var(--accent),var(--accent-2));transform:rotate(45deg);}
+  .toolbar .actions{display:flex; gap:10px; flex-wrap:wrap;}
+  button{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:13px;
+    border-radius:7px; border:1px solid var(--line-strong);
+    background:var(--panel); color:var(--ink);
+    padding:9px 14px; cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+    transition:transform .12s ease, border-color .12s ease, background .12s ease;
+  }
+  button:hover{border-color:var(--accent); background:var(--accent-tint);}
+  button:active{transform:scale(0.97);}
+  button.primary{
+    background:linear-gradient(135deg,var(--accent),var(--accent-dark));
+    color:#fff; border-color:var(--accent-dark);
+    box-shadow:0 6px 16px -6px rgba(194,65,12,0.55);
+  }
+  button.primary:hover{background:linear-gradient(135deg,var(--accent-dark),var(--accent-dark)); box-shadow:0 6px 18px -6px rgba(194,65,12,0.7);}
+  button.ghost{background:transparent; border-color:transparent; color:var(--muted); padding:9px 10px;}
+  button.ghost:hover{color:var(--accent); background:var(--accent-tint); border-color:transparent;}
+  button svg{width:15px;height:15px;flex:none;}
+
+  .hint{
+    font-size:12px; color:var(--muted); margin:2px 0 22px; line-height:1.5;
+  }
+  .hint b{color:var(--ink); font-weight:600;}
+
+  /* ---------- document card ---------- */
+  .sheet{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:40px 40px 34px;
+    box-shadow:0 2px 4px rgba(20,22,28,0.05), 0 24px 48px -26px rgba(20,22,28,0.28);
+    overflow:hidden;
+  }
+  .sheet::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:5px;
+    background:linear-gradient(90deg,var(--accent) 0%, var(--accent-2) 45%, var(--steel) 100%);
+  }
+  .doc-head{display:flex; justify-content:space-between; align-items:flex-start; gap:24px; padding-bottom:22px; border-bottom:2px solid var(--ink);}
+  .doc-head .logo{display:flex; flex-direction:column; gap:2px;}
+  .doc-head .logo .wordmark{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:26px; letter-spacing:-0.01em;}
+  .doc-head .logo .wordmark span{color:var(--accent);}
+  .doc-head .logo .sub{font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+  .doc-head .doctitle{text-align:right;}
+  .doc-head .doctitle .label{font-size:11px; letter-spacing:0.14em; text-transform:uppercase; color:var(--muted); font-weight:600;}
+  .doc-head .doctitle .num{font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:500; color:var(--accent-dark);}
+
+  .panels{display:grid; grid-template-columns:1fr 1fr; gap:22px; margin:26px 0 30px;}
+  .panel h3{
+    font-size:11px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent-dark);
+    font-weight:700; margin:0 0 10px;
+  }
+  .field-row{display:flex; gap:8px; padding:5px 0; border-bottom:1px dashed var(--line); font-size:13.5px;}
+  .field-row:last-child{border-bottom:none;}
+  .field-row .k{color:var(--muted); min-width:96px; flex:none; padding-top:2px;}
+  .field-row .v{flex:1; outline:none; border:none; background:transparent; font:inherit; color:var(--ink); padding:1px 4px; border-radius:4px;}
+  .field-row .v:focus{background:var(--accent-tint);}
+  .field-row .v[data-type="date"]{font-family:'IBM Plex Mono',monospace; font-size:12.5px;}
+
+  table{width:100%; border-collapse:collapse; margin-top:6px; font-size:13.5px;}
+  thead th{
+    text-align:left; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase;
+    color:#fff; background:linear-gradient(180deg,#20232c,var(--ink)); padding:11px 10px; font-weight:600;
+    border-bottom:2px solid var(--accent);
+  }
+  thead th:first-child{border-radius:6px 0 0 6px;}
+  thead th:last-child{border-radius:0 6px 6px 0; text-align:right;}
+  thead th.num{text-align:right;}
+  tbody td{padding:0; border-bottom:1px solid var(--line); vertical-align:middle;}
+  tbody tr:hover{background:#fbf7f1;}
+  tbody td .cell{
+    width:100%; border:none; outline:none; background:transparent; font:inherit;
+    color:var(--ink); padding:9px 10px; font-family:'Inter',sans-serif;
+  }
+  tbody td .cell:focus{background:var(--accent-tint); border-radius:5px;}
+  tbody td.num .cell{text-align:right; font-family:'IBM Plex Mono',monospace; font-size:13px;}
+  tbody td.total{font-family:'IBM Plex Mono',monospace; text-align:right; font-weight:600; padding:9px 10px; color:var(--good);}
+  tbody td.rowop{width:34px; text-align:center;}
+  tbody td.rowop button{padding:5px; border:none; background:transparent; color:var(--muted); border-radius:6px;}
+  tbody td.rowop button:hover{color:#b3352f; background:#fbeae9;}
+
+  tfoot td{padding:14px 10px 4px; font-weight:700;}
+  tfoot .lbl{text-align:right; font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--muted);}
+  tfoot .amt{font-family:'IBM Plex Mono',monospace; font-size:19px; color:var(--accent-dark); text-align:right;}
+
+  .weightbox{
+    display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+    margin-top:16px; padding:14px 16px;
+    background:var(--accent-tint); border:1px dashed var(--line-strong); border-radius:8px;
+  }
+  .weightbox .wb-field{display:flex; align-items:center; gap:8px;}
+  .weightbox label{font-size:12px; font-weight:600; color:var(--accent-dark); white-space:nowrap;}
+  .weightbox input{
+    width:120px; border:1px solid var(--line-strong); border-radius:6px; background:#fff;
+    font:inherit; font-family:'IBM Plex Mono',monospace; font-size:13px; padding:6px 8px; color:var(--ink);
+  }
+  .weightbox input:focus{outline:none; border-color:var(--accent);}
+  .weightbox .wb-result{
+    font-family:'IBM Plex Mono',monospace; font-size:15px; font-weight:700; color:var(--good);
+    background:#fff; border:1px solid var(--line); border-radius:6px; padding:7px 12px;
+  }
+  .weightbox .wb-hint{font-size:11px; color:var(--muted); flex:1 1 220px;}
+
+  .addrow{margin-top:14px;}
+  body.hide-valorkg .valorkg-col{display:none !important;}
+  .addrow button{width:100%; justify-content:center; border-style:dashed; color:var(--muted); font-size:12.5px;}
+  .addrow button:hover{color:var(--accent-dark);}
+
+  /* ---------- laser params panel ---------- */
+  .laserbox{
+    display:flex; align-items:flex-end; gap:22px; flex-wrap:wrap;
+    margin-top:14px; padding:14px 16px;
+    background:#fff; border:1px solid var(--line); border-radius:8px;
+  }
+  .laserbox .lb-field{display:flex; flex-direction:column; gap:5px;}
+  .laserbox label{font-size:11px; font-weight:600; color:var(--accent-dark); text-transform:uppercase; letter-spacing:0.04em;}
+  .laserbox input{
+    width:130px; border:1px solid var(--line-strong); border-radius:6px; background:var(--paper);
+    font:inherit; font-family:'IBM Plex Mono',monospace; font-size:13px; padding:7px 9px; color:var(--ink);
+  }
+  .laserbox input:focus{outline:none; border-color:var(--accent);}
+  .laserbox .lb-hint{font-size:11px; color:var(--muted); flex:1 1 260px; line-height:1.5;}
+
+  /* ---------- table scroll + dxf/detail ---------- */
+  .table-scroll{width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+  table{min-width:920px;}
+  td.exp{width:28px; text-align:center; padding:0;}
+  td.exp button{
+    padding:5px; border:none; background:transparent; color:var(--muted); border-radius:6px;
+    transition:transform .15s ease, color .15s ease;
+  }
+  td.exp button:hover{color:var(--accent-dark); background:var(--accent-tint);}
+  td.exp button.open svg{transform:rotate(90deg);}
+  td.exp svg{transition:transform .15s ease; width:13px; height:13px;}
+
+  tr.detail-row{display:none;}
+  tr.detail-row.open{display:table-row;}
+  tr.detail-row td{padding:0; border-bottom:1px solid var(--line); background:#fbf8f3;}
+  .detail-wrap{padding:14px 16px 16px 40px; display:flex; flex-direction:column; gap:10px;}
+  .detail-title{font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent-dark); font-weight:700;}
+  .detail-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(128px,1fr)); gap:10px 14px;}
+  .detail-field{display:flex; flex-direction:column; gap:4px;}
+  .detail-field label{font-size:10.5px; color:var(--muted); font-weight:600;}
+  .detail-field input, .detail-field select{
+    border:1px solid var(--line-strong); border-radius:6px; background:#fff;
+    font:inherit; font-family:'IBM Plex Mono',monospace; font-size:12.5px; padding:6px 8px; color:var(--ink);
+  }
+  .detail-field select{font-family:'Inter',sans-serif; font-size:12.5px;}
+  .detail-field input:focus, .detail-field select:focus{outline:none; border-color:var(--accent);}
+  .detail-field .out{
+    border:1px solid var(--line); border-radius:6px; background:var(--accent-tint);
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; padding:6px 8px; color:var(--good); font-weight:600;
+  }
+  .dxf-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .dxf-btn{font-size:12px; padding:7px 12px;}
+  .dxf-btn svg{width:14px;height:14px;}
+  .dxf-filename{font-size:11.5px; color:var(--muted); font-family:'IBM Plex Mono',monospace;}
+  .dxf-warning{font-size:11px; color:#b3352f; background:#fbeae9; border-radius:6px; padding:6px 9px; max-width:520px;}
+  .detail-summary{
+    display:flex; gap:18px; flex-wrap:wrap; padding-top:8px; border-top:1px dashed var(--line);
+    font-size:12.5px;
+  }
+  .detail-summary b{color:var(--accent-dark);}
+
+  .footnote{margin-top:30px; padding-top:16px; border-top:1px solid var(--line); font-size:11.5px; color:var(--muted); display:flex; justify-content:space-between; gap:20px;}
+
+  /* ---------- toast ---------- */
+  #toast{
+    position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--ink); color:#fff; padding:11px 18px; border-radius:9px; font-size:13px;
+    opacity:0; pointer-events:none; transition:all .25s ease; z-index:50; font-weight:500;
+  }
+  #toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  /* ---------- print ---------- */
+  @media print{
+    .toolbar, .addrow, .rowop button, .exp button, .dxf-row, #toast{display:none !important;}
+    body{background:#fff;}
+    .wrap{padding:0; max-width:none;}
+    .sheet{border:none; box-shadow:none; border-radius:0; padding:6px 4px;}
+    .field-row .v:focus, tbody td .cell:focus{background:transparent;}
+    tbody tr:hover{background:transparent;}
+    .table-scroll{overflow-x:visible;}
+    table{min-width:0; font-size:11.5px;}
+    tr.detail-row td{padding:0;}
+    .detail-wrap{padding:8px 10px 10px 10px;}
+    tr.detail-row, tr.item-row{ page-break-inside:avoid; break-inside:avoid; }
+    @page{size:landscape; margin:12mm 10mm;}
+  }
+
+  /* ---------- calculadora de corte (modal) ---------- */
+  #corteModal{position:fixed;inset:0;background:rgba(20,22,28,.55);z-index:40;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
+  #corteModal.open{display:flex}
+  .cm-box{background:var(--panel);border-radius:14px;width:100%;max-width:1080px;padding:24px 26px 26px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);position:relative}
+  .cm-box h2{font-family:'Space Grotesk',sans-serif;margin:0 0 4px;font-size:20px}
+  .cm-box h4{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-dark);margin:20px 0 8px}
+  .cm-close{position:absolute;top:14px;right:14px}
+  .cm-sub{font-size:12px;color:var(--muted);margin:0 0 6px;line-height:1.5}
+  .cm-grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .cm-top{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;margin-top:10px}
+  .cm-top label{display:flex;flex-direction:column;gap:4px;font-size:11px;font-weight:600;color:var(--accent-dark);text-transform:uppercase}
+  .cm-box input,.cm-box select{border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font:inherit;font-family:'IBM Plex Mono',monospace;font-size:12.5px;padding:6px 8px;color:var(--ink);width:100%;min-width:0}
+  .cm-box select{font-family:'Inter',sans-serif}
+  .cm-top input,.cm-top select{width:150px}
+  .cm-box table{min-width:0;font-size:12.5px}
+  .cm-box thead th{padding:8px 6px;font-size:10px}
+  .cm-box tbody td{padding:3px 3px;border-bottom:1px solid var(--line)}
+  .cm-box td.o{font-family:'IBM Plex Mono',monospace;font-size:12px;text-align:right;white-space:nowrap;padding:3px 6px}
+  .cm-box .sm{padding:4px 8px;font-size:12px}
+  .cm-tot{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+  .cm-tot div{background:var(--accent-tint);border:1px solid var(--line);border-radius:8px;padding:9px 12px}
+  .cm-tot small{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600}
+  .cm-tot b{font-family:'IBM Plex Mono',monospace;font-size:15px}
+  .cm-tot .big{background:var(--ink);color:#fff}.cm-tot .big small{color:#bbb}
+  .cm-scroll{overflow-x:auto}.cm-warn{color:#b3352f;font-size:11px}.cm-auto{font-size:11px;font-weight:600;color:var(--accent-dark);margin-top:2px}.cm-chk{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;margin:14px 0 2px;line-height:1.45;cursor:pointer}.cm-chk input{margin-top:3px}
+  @media(max-width:760px){.cm-grid2{grid-template-columns:1fr}}
+  @media print{#corteModal{display:none !important}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style id="saas-theme">
+:root{--ink:#18212f;--paper:#eceff4;--line:#dde2ea;--line-strong:#c5ccd8;--muted:#6a7588;--accent:#0e7490;--accent-2:#22b8cf;--accent-dark:#0b5c73;--accent-tint:#e7f3f7;--brand:#f26b1d;--side:#161f2e;--r:10px}
+body,button,input,select,tbody td .cell{font-family:'Manrope',system-ui,sans-serif;font-variant-numeric:tabular-nums}
+body{padding-left:244px;font-size:14px}
+.wrap{max-width:1120px;padding:26px 32px 90px}
+/* sidebar */
+.side{position:fixed;inset:0 auto 0 0;width:244px;background:var(--side);color:#a9b5c7;display:flex;flex-direction:column;padding:18px 12px;gap:2px;z-index:30;overflow-y:auto}
+.side .logo{display:flex;align-items:center;gap:10px;padding:4px 10px 18px;color:#fff;font-weight:800;font-size:17px;letter-spacing:-.01em}
+.side .logo i{width:28px;height:28px;border-radius:8px;background:var(--brand);display:grid;place-items:center;font-style:normal;font-size:13px;color:#fff}
+.side .logo small{display:block;font-weight:500;font-size:11px;color:#7f8ca1;letter-spacing:0}
+.side .grp{font-size:11.5px;color:#6f7d93;font-weight:600;padding:14px 10px 6px}
+.side .nav{width:100%;justify-content:flex-start;background:transparent;border:0;border-radius:8px;color:#b8c3d4;padding:9px 10px;font-weight:600;font-size:13px;gap:11px}
+.side .nav svg{width:17px;height:17px;opacity:.85}
+.side .nav:hover{background:rgba(255,255,255,.07);color:#fff;border:0}
+.side .nav.on{background:rgba(34,184,207,.16);color:#fff}
+.side .nav.on svg{color:var(--accent-2);opacity:1}
+.side .foot{margin-top:auto;padding:12px 10px 2px;font-size:11.5px;color:#6f7d93;border-top:1px solid rgba(255,255,255,.08)}
+/* top bar */
+.toolbar{background:rgba(255,255,255,.86);padding:11px 32px;border-bottom:1px solid var(--line)}
+.toolbar .brandmark{font-weight:600;font-size:13.5px;color:var(--muted);gap:8px}
+.toolbar .brandmark b{color:var(--ink);font-weight:700}
+.toolbar .actions>button:not(#btnCorte):not(#btnPdf){display:none}
+.pill{font-size:11.5px;font-weight:700;color:#8a5a00;background:#fff3d6;border-radius:99px;padding:3px 10px}
+button{border-radius:8px;border-color:var(--line-strong);box-shadow:0 1px 0 rgba(20,30,50,.04)}
+button.primary{background:var(--accent);border-color:var(--accent-dark);box-shadow:0 1px 2px rgba(11,92,115,.35)}
+button.primary:hover{background:var(--accent-dark)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent-2);outline-offset:1px}
+/* kpis */
+.kpis{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.kpis>div{padding:14px 18px;border-left:1px solid var(--line)}.kpis>div:first-child{border-left:0;background:var(--side);color:#fff}
+.kpis small{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:3px}.kpis>div:first-child small{color:#8e9bb0}
+.kpis b{font-size:21px;font-weight:800;letter-spacing:-.02em}.kpis>div:first-child b{font-size:26px}
+details.help{background:#fff;border:1px solid var(--line);border-radius:10px;margin:0 0 18px;padding:0}
+details.help summary{cursor:pointer;padding:11px 16px;font-weight:700;font-size:13px;color:var(--accent-dark)}
+details.help .hint{margin:0;padding:0 16px 14px}
+/* document */
+.sheet{border-radius:14px;border:1px solid var(--line);padding:34px 36px 30px;box-shadow:0 1px 2px rgba(20,30,50,.05),0 14px 34px -22px rgba(20,30,50,.25)}
+.sheet::before{height:3px;background:linear-gradient(90deg,var(--brand) 0,var(--brand) 22%,var(--accent) 22%)}
+.doc-head{border-bottom:1px solid var(--line)}
+.doc-head .logo .wordmark{font-weight:800;letter-spacing:-.03em}.doc-head .logo .wordmark span{color:var(--brand)}
+.doc-head .doctitle .num{font-family:'Manrope';font-weight:800;color:var(--ink)}
+.panels{gap:16px}
+.panel{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fafbfd}
+.panel h3{text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink)}
+.field-row{border-bottom:1px solid #e9edf3}
+.field-row .v:focus,tbody td .cell:focus{background:#fff;box-shadow:0 0 0 2px var(--accent-2)}
+/* table */
+thead th{background:#f3f5f9;color:var(--muted);text-transform:none;letter-spacing:0;font-size:12px;font-weight:700;border-bottom:1px solid var(--line-strong)}
+thead th:first-child,thead th:last-child{border-radius:0}
+tbody td{border-bottom:1px solid #e9edf3}tbody tr:hover{background:#f7fafc}
+tfoot td.lbl{font-weight:700;color:var(--muted)}tfoot td.amt{font-weight:800;font-size:18px;color:var(--ink)}
+.weightbox,.laserbox{border-radius:12px;background:#fafbfd}
+.laserbox label,.weightbox label{text-transform:none;letter-spacing:0;color:var(--muted);font-size:12px}
+.detail-wrap{background:#f8fafc}tr.detail-row td{background:#f8fafc}
+.addrow button{border-radius:10px;border-color:var(--line-strong)}
+/* modal */
+#corteModal{background:rgba(15,23,38,.6);backdrop-filter:blur(3px)}
+.cm-box{border-radius:16px;padding:28px 30px}
+.cm-box h2{font-family:'Manrope';font-weight:800;letter-spacing:-.02em;font-size:22px}
+.cm-box h4{text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink);margin:24px 0 8px}
+.cm-box thead th{font-size:11.5px}
+.cm-tot div{background:#f3f5f9;border-radius:10px}.cm-tot .big{background:var(--side)}
+#toast{background:var(--side);border-radius:10px}
+@media(max-width:900px){body{padding-left:0}.side{position:static;width:auto;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;padding:8px}.side .logo small,.side .grp,.side .foot{display:none}.side .logo{padding:0 8px}.side .nav{width:auto;white-space:nowrap}.kpis{grid-template-columns:1fr 1fr}.wrap{padding:18px 14px 80px}.sheet{padding:22px 16px}.panels{grid-template-columns:1fr}.toolbar{padding:10px 14px}}
+@media print{.side,.kpis,details.help,.pill{display:none !important}body{padding-left:0}.panel{border:0;padding:0;background:none}}
+</style>
+</head>
+<body>
+<aside class="side">
+<div class="logo"><i>C</i><div>CEKTEC<small>Orçamentos de corte</small></div></div>
+<div class="grp">Orçamento</div><button class="nav on" data-go="top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Editor</button><button class="nav " data-go="btnCorte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><circle cx="18" cy="16" r="3"/></svg>Calculadora de corte</button><div class="grp">Dados</div><button class="nav " data-go="btnPaste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>Colar do Excel</button><button class="nav " data-go="btnImportPdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V4m0 0-4 4m4-4 4 4M4 17v3h16v-3"/></svg>Importar PDF</button><div class="grp">Exportar</div><button class="nav " data-go="btnPdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Gerar PDF</button><button class="nav " data-go="btnExportXlsx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg>Excel (.xlsx)</button><button class="nav " data-go="btnExportCsv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16"/></svg>CSV</button><div class="grp">Ajustes</div><button class="nav " data-go="btnToggleValorKg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>Mostrar/ocultar Valor/Kg</button><button class="nav " data-go="btnClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6"/></svg>Limpar linhas</button><div class="foot">CEKTEC Perfilados · Chapecó - SC</div></aside>
+
+<div class="toolbar">
+  <div class="brandmark"><span>Orçamentos</span><span>/</span><b>Editor</b><span class="pill">Rascunho</span></div>
+  <div class="actions">
+    <button id="btnCorte" class="primary" title="Tabela de espessuras, tempo de corte e importação de vários DXF">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+      Calculadora de corte
+    </button>
+    <button class="ghost" id="btnClear" title="Limpar todas as linhas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+      Limpar linhas
+    </button>
+    <button class="ghost" id="btnToggleValorKg" title="Mostrar ou ocultar a coluna Valor do Kg">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      <span id="toggleValorKgLabel">Ocultar Valor/Kg</span>
+    </button>
+    <button id="btnPaste" title="Colar dados copiados do Excel">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2"/></svg>
+      Colar do Excel
+    </button>
+    <button id="btnImportPdf" title="Importar um orçamento em PDF gerado por este sistema para editar novamente">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 17V3m0 0-4 4m4-4 4 4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+      Importar PDF
+    </button>
+    <input type="file" id="pdfFileInput" accept="application/pdf,.pdf" style="display:none">
+    <button id="btnExportXlsx" title="Exportar o orçamento para Excel (.xlsx)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+      Exportar Excel
+    </button>
+    <button id="btnExportCsv" title="Exportar a tabela de itens para CSV">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 17v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg>
+      CSV
+    </button>
+    <button class="primary" id="btnPdf" title="Gerar PDF formatado">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h9l5 5v15H6v-4M2 13h6M2 13a2 2 0 1 0 0-4h-1v8h1a2 2 0 0 0 0-4Z"/></svg>
+      Gerar PDF
+    </button>
+  </div>
+</div>
+
+<div class="wrap">
+  <p class="hint">Clique em qualquer campo para editar. Informe o <b>Peso (kg)</b> de cada item na tabela para calcular automaticamente o <b>Valor do Kg</b> daquela linha (Valor Total da linha ÷ Peso da linha). O resumo abaixo da tabela soma o peso de todos os itens e mostra o Valor do Kg médio do pedido inteiro. Para colar itens do Excel: copie as colunas <b>Nome Peça, Material, Espessura, Quantidade, Custo p/ Unidade, Peso (kg)</b> — nessa ordem — e clique em <b>Colar do Excel</b> (ou cole diretamente dentro de uma célula da tabela com Ctrl+V). Novas linhas são criadas automaticamente. Clique na seta <b>▸</b> ao lado de cada peça para <b>importar o arquivo .dxf</b> dela: a área e o perímetro de corte são calculados automaticamente e, junto com a densidade do material, o preço do kg e o preço da hora do laser (parâmetros abaixo da tabela), o sistema preenche sozinho o <b>Peso</b> e o <b>Custo p/ Unidade</b> daquela linha — como no cálculo detalhado do SigmaNest. O DXF é lido em milímetros; funciona melhor com peças de contorno fechado (1 peça por arquivo). Já gerou um orçamento em PDF por aqui antes e quer editá-lo de novo? Clique em <b>Importar PDF</b> na barra superior e selecione o arquivo — os dados da empresa, do cliente e da tabela de itens são recarregados automaticamente nos campos (confira os valores depois de importar, pois a leitura do PDF é aproximada). Não quer que o cliente veja o <b>Valor do Kg</b>? Clique em <b>Ocultar Valor/Kg</b> na barra superior para esconder essa coluna da tabela e do resumo (o Peso continua sendo calculado normalmente por baixo dos panos).</p>
+
+  <div class="sheet" id="sheet">
+    <div class="doc-head">
+      <div class="logo">
+        <div class="wordmark">CEK<span>TEC</span></div>
+        <div class="sub" contenteditable="true">Perfilados metálicos</div>
+      </div>
+      <div class="doctitle">
+        <div class="label">Orçamento nº</div>
+        <div class="num" contenteditable="true" id="orcNum">135</div>
+      </div>
+    </div>
+
+    <div class="panels">
+      <div class="panel">
+        <h3>Empresa</h3>
+        <div class="field-row"><span class="k">Empresa</span><span class="v" contenteditable="true">CEKTEC PERFILADOS LTDA.</span></div>
+        <div class="field-row"><span class="k">Endereço</span><span class="v" contenteditable="true">R. Maria Thereza Cella Cararo, 110-D</span></div>
+        <div class="field-row"><span class="k">Cidade</span><span class="v" contenteditable="true">Chapecó - SC</span></div>
+        <div class="field-row"><span class="k">CNPJ</span><span class="v" contenteditable="true">62.343.425/0001-50</span></div>
+        <div class="field-row"><span class="k">Email</span><span class="v" contenteditable="true">cektecperfilados@gmail.com</span></div>
+        <div class="field-row"><span class="k">Telefone</span><span class="v" contenteditable="true">(49) 3199-1854</span></div>
+        <div class="field-row"><span class="k">IE</span><span class="v" contenteditable="true">262829908</span></div>
+      </div>
+      <div class="panel">
+        <h3>Cliente</h3>
+        <div class="field-row"><span class="k">Cliente</span><span class="v" contenteditable="true">LBN ANDAIMES E ESCORAMENTOS LTDA.</span></div>
+        <div class="field-row"><span class="k">Endereço</span><span class="v" contenteditable="true">Estrada ERS 331 - KM 03 - Linha 02 - Nº 3005 - Secção Dourado</span></div>
+        <div class="field-row"><span class="k">CNPJ</span><span class="v" contenteditable="true">114.521.030/0001-09</span></div>
+        <div class="field-row"><span class="k">Telefone</span><span class="v" contenteditable="true">(54) 3522-0209</span></div>
+        <div class="field-row"><span class="k">Emissão</span><span class="v" data-type="date" contenteditable="true">07/07/2026</span></div>
+        <div class="field-row"><span class="k">Prazo entrega</span><span class="v" data-type="date" contenteditable="true">14/07/2026</span></div>
+      </div>
+    </div>
+
+    <div class="table-scroll">
+    <table id="itemsTable">
+      <thead>
+        <tr>
+          <th style="width:1%"></th>
+          <th style="width:15%">Nome Peça</th>
+          <th style="width:9%">Material</th>
+          <th class="num" style="width:6%">Espessura</th>
+          <th class="num" style="width:7%">Quantidade</th>
+          <th class="num" style="width:12%">Custo p/ Unidade</th>
+          <th class="num" style="width:9%">Peso (kg)</th>
+          <th class="num valorkg-col" style="width:11%">Valor do Kg</th>
+          <th class="num" style="width:12%">Valor Total</th>
+          <th style="width:1%"></th>
+        </tr>
+      </thead>
+      <tbody id="itemsBody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="8" class="lbl" id="tfootLbl">Valor total</td>
+          <td class="amt" id="grandTotal">R$ 0,00</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+    </div>
+
+    <div class="addrow">
+      <button id="btnAddRow">+ Adicionar linha</button>
+    </div>
+
+    <div class="laserbox">
+      <div class="lb-field">
+        <label>Preço da hora do laser (carbono)</label>
+        <input type="text" id="precoHoraLaser" placeholder="0,00" inputmode="decimal">
+      </div>
+      <div class="lb-field">
+        <label>Velocidade de corte (m/min)</label>
+        <input type="text" id="velocidadeCorte" value="2,5" inputmode="decimal">
+      </div>
+      <span class="lb-hint">Esses dois valores alimentam o cálculo de <b>tempo de corte</b> e <b>custo de corte</b> de cada peça importada por DXF (clique na seta ▸ ao lado do nome da peça para abrir o detalhamento).</span>
+    </div>
+
+    <div class="weightbox">
+      <div class="wb-field">
+        <label>Peso total dos itens (kg)</label>
+        <span class="wb-result" id="pesoTotal">0,000</span>
+      </div>
+      <div class="wb-field valorkg-col" id="wbValorKgField">
+        <label>Valor do Kg</label>
+        <span class="wb-result" id="valorPorKg">R$ 0,00</span>
+      </div>
+      <span class="wb-hint">Some automaticamente o peso digitado em cada item e divide o Valor total pela soma para achar o Valor do Kg.</span>
+    </div>
+
+    <div class="footnote">
+      <span>Orçamento gerado em <span id="genDate"></span></span>
+      <span>Valores sujeitos a alteração sem aviso prévio</span>
+    </div>
+  </div>
+</div>
+
+<div id="corteModal"><div class="cm-box">
+  <button class="ghost cm-close" id="cmClose">✕ Fechar</button>
+  <h2>Calculadora de corte laser</h2>
+  <p class="cm-sub">1) Ajuste a tabela de espessuras (velocidade de corte e perfuração). 2) Importe todos os DXF de uma vez. 3) Confira e envie para o orçamento. Tempo de corte = perímetro ÷ velocidade + furos × tempo de perfuração. As tabelas ficam salvas neste navegador.</p>
+  <div class="cm-top">
+    <label>Hora laser CARBONO (R$/h)<input id="cmHoraC" inputmode="decimal" placeholder="0,00"></label>
+    <label>Hora laser INOX (R$/h)<input id="cmHoraI" inputmode="decimal" placeholder="0,00"></label>
+    <label>Margem / impostos (%)<input id="cmMargem" inputmode="decimal" value="0"></label>
+    <label>Peso e material calculados sobre<select id="cmBase" style="width:190px"><option value="real">Área real (c/ furos)</option><option value="ret">Área retangular</option></select></label>
+  </div>
+  <h4>Tabela de espessuras</h4>
+  <div class="cm-grid2" id="cmTabelas"></div>
+  <h4>Importar DXF</h4>
+  <div class="cm-top">
+    <label>Material padrão<select id="cmDefMat"><option value="carbono">Carbono</option><option value="inox">Inox</option></select></label>
+    <label>Espessura padrão (mm)<select id="cmDefEsp"></select></label>
+    <button id="cmImport" class="primary">Importar vários DXF</button>
+    <button id="cmClear" class="ghost">Limpar lista</button>
+    <button id="cmReparse" class="ghost">Reaplicar pelos nomes</button>
+    <input type="file" id="cmFiles" accept=".dxf" multiple style="display:none">
+  </div>
+  <label class="cm-chk"><input type="checkbox" id="cmAuto" checked style="width:auto"><span>Identificar <b>espessura, quantidade e material</b> pelo nome do arquivo — ex.: <i>suporte_3mm_x10.dxf</i>, <i>inox 2,5mm 12pcs</i>, <i>flange 1/4 qtd 4</i>, <i>base esp 12.7 qt 3</i></span></label>
+  <p class="cm-sub">Alterar o material/espessura padrão aplica a todas as peças da lista; depois ajuste peça a peça se precisar. Área já descontando as furações.</p>
+  <div class="cm-scroll"><table><thead><tr><th>Peça</th><th>Material</th><th>Esp.</th><th>Qtd</th><th>Dim. mm</th><th>Área real cm²</th><th>Área ret. cm²</th><th>Perím. mm</th><th>Furos</th><th>Tempo/pç</th><th>Peso total</th><th>Custo unit.</th><th>Total</th><th></th></tr></thead><tbody id="cmItens"></tbody></table></div>
+  <h4>Resumo por espessura</h4>
+  <div class="cm-scroll"><table><thead><tr><th>Material</th><th>Esp.</th><th>Peças</th><th>Área real cm²</th><th>Área ret. cm²</th><th>Tempo corte</th><th>Peso kg</th><th>Material R$</th><th>Corte R$</th><th>Total R$</th></tr></thead><tbody id="cmResumo"></tbody></table></div>
+  <div class="cm-tot" id="cmTot"></div>
+  <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end"><button id="cmSend" class="primary">Enviar para o orçamento ▸</button></div>
+</div></div>
+<div id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+</script>
+<script>
+/* ================= DXF ENGINE ================= */
+/* Lê o arquivo DXF (código de grupo ASCII), monta os contornos fechados
+   da peça e calcula a área líquida (descontando furos) e o perímetro
+   total de corte (contorno externo + todos os furos). Unidades: mm. */
+
+function dxf_readGroups(text){
+  const lines = text.split(/\r\n|\r|\n/);
+  const items = [];
+  for(let i=0;i+1<lines.length;i+=2){
+    const code = parseInt(lines[i].trim(),10);
+    const value = lines[i+1] !== undefined ? lines[i+1].trim() : '';
+    items.push({code, value});
+  }
+  return items;
+}
+function dxf_extractEntitiesSection(items){
+  let start=-1, end=-1;
+  for(let i=0;i<items.length;i++){
+    if(items[i].code===2 && items[i].value.toUpperCase()==='ENTITIES'){ start=i+1; }
+    if(start!==-1 && items[i].code===0 && items[i].value==='ENDSEC'){ end=i; break; }
+  }
+  if(start===-1) return [];
+  return items.slice(start, end===-1?items.length:end);
+}
+function dxf_splitEntities(items){
+  const ents=[]; let cur=null;
+  for(const it of items){
+    if(it.code===0){ if(cur) ents.push(cur); cur = {type: it.value, codes: []}; }
+    else if(cur){ cur.codes.push(it); }
+  }
+  if(cur) ents.push(cur);
+  return ents;
+}
+function dxf_num(v){ const n = parseFloat(v); return isNaN(n) ? 0 : n; }
+function dxf_getCode(codes, code){ const f = codes.find(c=>c.code===code); return f ? f.value : undefined; }
+
+function dxf_bulgeToPoints(p1, p2, bulge){
+  if(Math.abs(bulge) < 1e-9) return [p2];
+  const theta = 4*Math.atan(bulge);
+  const dx = p2.x-p1.x, dy = p2.y-p1.y;
+  const d = Math.sqrt(dx*dx+dy*dy);
+  if(d < 1e-9) return [p2];
+  const r = d/(2*Math.sin(theta/2));
+  const mx=(p1.x+p2.x)/2, my=(p1.y+p2.y)/2;
+  const h = r*Math.cos(theta/2);
+  const ux = -dy/d, uy = dx/d;
+  const sign = theta>=0 ? 1 : -1;
+  const cx = mx - sign*h*ux;
+  const cy = my - sign*h*uy;
+  const startAngle = Math.atan2(p1.y-cy, p1.x-cx);
+  const n = Math.max(6, Math.ceil(Math.abs(theta)/(Math.PI/60)));
+  const pts=[];
+  for(let k=1;k<=n;k++){
+    const a = startAngle + theta*(k/n);
+    pts.push({x: cx + r*Math.cos(a), y: cy + r*Math.sin(a)});
+  }
+  pts[pts.length-1] = {x:p2.x, y:p2.y};
+  return pts;
+}
+function dxf_arcToPoints(cx, cy, r, a1deg, a2deg){
+  let a1 = a1deg*Math.PI/180, a2 = a2deg*Math.PI/180;
+  while(a2 <= a1) a2 += Math.PI*2;
+  const theta = a2-a1;
+  const n = Math.max(6, Math.ceil(theta/(Math.PI/60)));
+  const pts=[];
+  for(let k=0;k<=n;k++){
+    const a = a1 + theta*(k/n);
+    pts.push({x: cx+r*Math.cos(a), y: cy+r*Math.sin(a)});
+  }
+  return pts;
+}
+function dxf_circleToPoints(cx, cy, r){
+  const n = 180; const pts=[];
+  for(let k=0;k<n;k++){ const a = Math.PI*2*(k/n); pts.push({x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)}); }
+  pts.push(pts[0]);
+  return pts;
+}
+function dxf_readLwVertices(codes){
+  const verts=[]; let cur=null;
+  for(const c of codes){
+    if(c.code===10){ if(cur) verts.push(cur); cur={x:dxf_num(c.value), y:0, bulge:0}; }
+    else if(c.code===20 && cur){ cur.y=dxf_num(c.value); }
+    else if(c.code===42 && cur){ cur.bulge=dxf_num(c.value); }
+  }
+  if(cur) verts.push(cur);
+  return verts;
+}
+function dxf_readSplineFitPoints(codes){
+  const pts=[]; let cur=null;
+  for(const c of codes){
+    if(c.code===11){ if(cur) pts.push(cur); cur={x:dxf_num(c.value),y:0}; }
+    else if(c.code===21 && cur){ cur.y=dxf_num(c.value); }
+  }
+  if(cur) pts.push(cur);
+  return pts;
+}
+function dxf_expandBulgeChain(verts, closed){
+  if(verts.length===0) return [];
+  const pts=[verts[0]];
+  for(let k=0;k<verts.length-1;k++){
+    const a=verts[k], b=verts[k+1];
+    if(Math.abs(a.bulge)>1e-9){ pts.push(...dxf_bulgeToPoints(a,b,a.bulge)); }
+    else { pts.push(b); }
+  }
+  if(closed){
+    const last = verts[verts.length-1], first = verts[0];
+    if(Math.abs(last.bulge)>1e-9){ pts.push(...dxf_bulgeToPoints(last, first, last.bulge)); }
+    else { pts.push(first); }
+  }
+  return pts;
+}
+function dxf_entitiesToPieces(ents){
+  const pieces = []; const warnings = []; let i=0;
+  while(i<ents.length){
+    const e = ents[i];
+    if(e.type==='LINE'){
+      const p1 = {x:dxf_num(dxf_getCode(e.codes,10)), y:dxf_num(dxf_getCode(e.codes,20))};
+      const p2 = {x:dxf_num(dxf_getCode(e.codes,11)), y:dxf_num(dxf_getCode(e.codes,21))};
+      pieces.push({points:[p1,p2], closed:false}); i++;
+    } else if(e.type==='CIRCLE'){
+      const cx=dxf_num(dxf_getCode(e.codes,10)), cy=dxf_num(dxf_getCode(e.codes,20)), r=dxf_num(dxf_getCode(e.codes,40));
+      pieces.push({points: dxf_circleToPoints(cx,cy,r), closed:true}); i++;
+    } else if(e.type==='ARC'){
+      const cx=dxf_num(dxf_getCode(e.codes,10)), cy=dxf_num(dxf_getCode(e.codes,20)), r=dxf_num(dxf_getCode(e.codes,40));
+      const a1=dxf_num(dxf_getCode(e.codes,50)), a2=dxf_num(dxf_getCode(e.codes,51));
+      pieces.push({points: dxf_arcToPoints(cx,cy,r,a1,a2), closed:false}); i++;
+    } else if(e.type==='LWPOLYLINE'){
+      const verts = dxf_readLwVertices(e.codes);
+      const flag = dxf_num(dxf_getCode(e.codes,70));
+      const closed = (flag & 1) === 1;
+      pieces.push({points: dxf_expandBulgeChain(verts, closed), closed}); i++;
+    } else if(e.type==='POLYLINE'){
+      const flag = dxf_num(dxf_getCode(e.codes,70));
+      const closed = (flag & 1) === 1;
+      const verts = []; let j=i+1;
+      while(j<ents.length && ents[j].type==='VERTEX'){
+        verts.push({x:dxf_num(dxf_getCode(ents[j].codes,10)), y:dxf_num(dxf_getCode(ents[j].codes,20)), bulge:dxf_num(dxf_getCode(ents[j].codes,42))});
+        j++;
+      }
+      if(j<ents.length && ents[j].type==='SEQEND') j++;
+      pieces.push({points: dxf_expandBulgeChain(verts, closed), closed}); i = j;
+    } else if(e.type==='SPLINE'){
+      const pts = dxf_readSplineFitPoints(e.codes);
+      if(pts.length>=2){ pieces.push({points:pts, closed:false}); warnings.push('Curva SPLINE aproximada por segmentos retos (precisão reduzida).'); }
+      i++;
+    } else { i++; }
+  }
+  return {pieces, warnings};
+}
+function dxf_chainPieces(pieces, tol){
+  const used = new Array(pieces.length).fill(false);
+  const loops = []; const leftover = [];
+  function eq(a,b){ return Math.abs(a.x-b.x)<tol && Math.abs(a.y-b.y)<tol; }
+  for(let i=0;i<pieces.length;i++){
+    if(used[i]) continue;
+    used[i]=true;
+    if(pieces[i].closed){ loops.push({points: pieces[i].points}); continue; }
+    let chain = pieces[i].points.slice();
+    let extended = true;
+    while(extended){
+      extended=false;
+      const tail = chain[chain.length-1];
+      for(let j=0;j<pieces.length;j++){
+        if(used[j] || pieces[j].closed) continue;
+        const pj = pieces[j].points;
+        if(eq(pj[0], tail)){ chain = chain.concat(pj.slice(1)); used[j]=true; extended=true; break; }
+        if(eq(pj[pj.length-1], tail)){ chain = chain.concat(pj.slice(0,-1).reverse()); used[j]=true; extended=true; break; }
+      }
+    }
+    if(chain.length>2 && eq(chain[0], chain[chain.length-1])){ loops.push({points: chain}); }
+    else { leftover.push({points: chain}); }
+  }
+  return {loops, leftover};
+}
+function dxf_polygonArea(points){
+  let a=0;
+  for(let i=0;i<points.length-1;i++){ a += points[i].x*points[i+1].y - points[i+1].x*points[i].y; }
+  return a/2;
+}
+function dxf_polygonPerimeter(points){
+  let p=0;
+  for(let i=0;i<points.length-1;i++){
+    const dx=points[i+1].x-points[i].x, dy=points[i+1].y-points[i].y;
+    p += Math.sqrt(dx*dx+dy*dy);
+  }
+  return p;
+}
+function dxf_pointInPolygon(pt, poly){
+  let inside=false;
+  for(let i=0,j=poly.length-2;i<poly.length-1;j=i++){
+    const xi=poly[i].x, yi=poly[i].y, xj=poly[j].x, yj=poly[j].y;
+    const intersect = ((yi>pt.y)!==(yj>pt.y)) && (pt.x < (xj-xi)*(pt.y-yi)/(yj-yi)+xi);
+    if(intersect) inside=!inside;
+  }
+  return inside;
+}
+function analyzeDxf(text, tol){
+  tol = tol || 0.01;
+  const items = dxf_readGroups(text);
+  const entItems = dxf_extractEntitiesSection(items);
+  const ents = dxf_splitEntities(entItems);
+  const {pieces, warnings} = dxf_entitiesToPieces(ents);
+  const {loops, leftover} = dxf_chainPieces(pieces, tol);
+
+  if(loops.length===0){
+    return {areaCm2:0, perimeterMm:0, warnings:['Nenhum contorno fechado foi encontrado neste arquivo DXF.'], loopCount:0};
+  }
+  const loopInfo = loops.map(l=>({
+    points:l.points,
+    area: Math.abs(dxf_polygonArea(l.points)),
+    perim: dxf_polygonPerimeter(l.points)
+  }));
+  loopInfo.sort((a,b)=>b.area-a.area);
+  const outer = loopInfo[0];
+  let netAreaMm2 = outer.area;
+  let totalPerimMm = outer.perim;
+  let extraOuterCount = 0;
+  for(let k=1;k<loopInfo.length;k++){
+    const loop = loopInfo[k];
+    const sample = loop.points[0];
+    if(dxf_pointInPolygon(sample, outer.points)){ netAreaMm2 -= loop.area; }
+    else { netAreaMm2 += loop.area; extraOuterCount++; }
+    totalPerimMm += loop.perim;
+  }
+  for(const lo of leftover){ totalPerimMm += dxf_polygonPerimeter(lo.points); }
+  if(extraOuterCount>0) warnings.push(`${extraOuterCount} contorno(s) adicional(is) não aninhado(s) — pode haver mais de uma peça neste arquivo.`);
+  if(leftover.length>0) warnings.push(`${leftover.length} segmento(s) não formaram contorno fechado (ignorados na área, somados ao perímetro).`);
+  return { areaCm2: netAreaMm2/100, perimeterMm: totalPerimMm, warnings, loopCount: loopInfo.length };
+}
+/* ================= FIM DXF ENGINE ================= */
+
+/* ================= IMPORTAR ORÇAMENTO EM PDF ================= */
+/* Lê um PDF gerado por este próprio sistema (botão "Gerar PDF") e tenta
+   recarregar os campos: cabeçalho, painel Empresa/Cliente e a tabela de
+   itens. A leitura usa a posição (x,y) de cada bloco de texto no PDF para
+   reconstruir linhas e colunas — é uma aproximação e pode precisar de
+   conferência manual, especialmente se o PDF não veio deste editor. */
+
+const LABELS_EMPRESA = ['Empresa','Endereço','Cidade','CNPJ','Email','Telefone','IE'];
+const LABELS_CLIENTE = ['Cliente','Endereço','CNPJ','Telefone','Emissão','Prazo entrega'];
+const TABLE_COLUMNS = [
+  {field:'nome', label:'Nome Peça'},
+  {field:'material', label:'Material'},
+  {field:'esp', label:'Espessura'},
+  {field:'qtd', label:'Quantidade'},
+  {field:'custo', label:'Custo p/ Unidade'},
+  {field:'peso', label:'Peso (kg)'}
+];
+
+async function pdf_extractLines(file){
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({data: buf}).promise;
+  const rawItems = [];
+  for(let p=1; p<=pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    for(const it of content.items){
+      const text = (it.str||'').trim();
+      if(!text) continue;
+      rawItems.push({
+        text,
+        x: it.transform[4],
+        key: (p-1)*100000 - it.transform[5] // ordena: página, depois topo->baixo
+      });
+    }
+  }
+  rawItems.sort((a,b)=>a.key-b.key);
+  const lines = [];
+  const yTol = 2.5;
+  for(const it of rawItems){
+    const last = lines[lines.length-1];
+    if(last && Math.abs(last.key - it.key) < yTol){
+      last.items.push(it);
+    } else {
+      lines.push({key: it.key, items:[it]});
+    }
+  }
+  lines.forEach(l=> l.items.sort((a,b)=>a.x-b.x));
+  return lines;
+}
+
+function pdf_findLineIndex(lines, matchFn, fromIdx){
+  fromIdx = fromIdx || 0;
+  for(let i=fromIdx; i<lines.length; i++){
+    if(matchFn(lines[i])) return i;
+  }
+  return -1;
+}
+
+/* O layout tem blocos lado a lado (cabeçalho + nº do orçamento; painel
+   Empresa + painel Cliente), então no PDF eles caem na MESMA linha de
+   texto, só que em posições X diferentes. Isso quebrava a leitura antiga,
+   que exigia uma linha inteira só com o rótulo. Aqui dividimos as linhas
+   em duas "colunas" por X antes de procurar os rótulos. */
+function pdf_splitColumn(lines, startIdx, endIdx, threshold, side){
+  const out = [];
+  for(let i=startIdx; i<endIdx; i++){
+    const items = (lines[i].items || []).filter(it => side==='left' ? it.x < threshold : it.x >= threshold);
+    if(items.length) out.push({items});
+  }
+  return out;
+}
+
+function pdf_parsePanelSection(colLines, labels){
+  const out = {};
+  for(const line of colLines){
+    const items = line.items;
+    if(!items.length) continue;
+    const first = items[0].text.trim();
+    const label = labels.find(l=> l === first);
+    if(label){
+      const value = items.slice(1).map(it=>it.text).join(' ').trim();
+      if(value) out[label] = value;
+    }
+  }
+  return out;
+}
+
+function pdf_setFieldRowValue(panelEl, label, value){
+  if(!panelEl || value === undefined) return;
+  const rows = panelEl.querySelectorAll('.field-row');
+  for(const row of rows){
+    const k = row.querySelector('.k');
+    if(k && k.textContent.trim() === label){
+      const v = row.querySelector('.v');
+      if(v) v.textContent = value;
+      return;
+    }
+  }
+}
+
+function pdf_parseItemRows(lines, headerIdx, stopIdx){
+  const headerItems = lines[headerIdx].items;
+  const columns = TABLE_COLUMNS.map(col=>{
+    const match = headerItems.find(it=> it.text.trim() === col.label || it.text.trim().includes(col.label));
+    return {field: col.field, x: match ? match.x : null};
+  }).filter(c=> c.x !== null);
+  columns.sort((a,b)=> a.x - b.x);
+  if(columns.length === 0) return {rows: [], warning: 'Não foi possível localizar as colunas da tabela.'};
+
+  const rows = [];
+  for(let i=headerIdx+1; i<stopIdx; i++){
+    const items = lines[i].items;
+    if(!items.length) continue;
+    // ignora linhas muito à esquerda em relação à 1a coluna (ex.: painel de detalhamento aberto)
+    const firstColX = columns[0].x;
+    if(items[0].x < firstColX - 25) continue;
+    const rowData = {nome:'', material:'', esp:'', qtd:'', custo:'', peso:''};
+    for(const it of items){
+      let best = null;
+      for(const col of columns){
+        if(col.x <= it.x + 2) best = col; else break;
+      }
+      if(best){
+        rowData[best.field] = rowData[best.field] ? (rowData[best.field] + ' ' + it.text) : it.text;
+      }
+    }
+    if(rowData.nome || rowData.material || rowData.qtd || rowData.custo || rowData.peso){
+      rows.push(rowData);
+    }
+  }
+  return {rows, warning: null};
+}
+
+async function importOrcamentoPdf(file){
+  let lines;
+  try{
+    lines = await pdf_extractLines(file);
+  }catch(err){
+    toast('Não foi possível ler este arquivo PDF.');
+    return;
+  }
+  if(!lines.length){
+    toast('Este PDF parece estar vazio ou é uma imagem escaneada (sem texto para ler).');
+    return;
+  }
+
+  const warnings = [];
+
+  // ---- nº do orçamento (rótulo fica ao lado da marca CEKTEC; o valor vem
+  // na linha seguinte, alinhado à direita, ao lado do subtítulo) ----
+  const numLabelIdx = pdf_findLineIndex(lines, l=> l.items.some(it=> it.text.trim()==='Orçamento nº'));
+  if(numLabelIdx !== -1 && lines[numLabelIdx+1] && lines[numLabelIdx+1].items.length){
+    const candItems = lines[numLabelIdx+1].items;
+    const maxX = Math.max(...candItems.map(it=>it.x));
+    const numVal = candItems.filter(it=> it.x >= maxX - 40).map(it=>it.text).join(' ').trim();
+    if(numVal) document.getElementById('orcNum').textContent = numVal;
+    else warnings.push('número do orçamento');
+  } else {
+    warnings.push('número do orçamento');
+  }
+
+  // ---- painéis Empresa / Cliente (lado a lado -> separa por posição X) ----
+  let panelHeaderIdx = -1, xCliente = null;
+  for(let i=0; i<lines.length; i++){
+    const eItem = lines[i].items.find(it=> it.text.trim()==='Empresa');
+    const cItem = lines[i].items.find(it=> it.text.trim()==='Cliente');
+    if(eItem && cItem){ panelHeaderIdx = i; xCliente = cItem.x; break; }
+  }
+  const tableHeaderIdx = pdf_findLineIndex(lines, l=> l.items.some(it=> it.text.trim()==='Nome Peça'));
+  const panels = document.querySelectorAll('.panels .panel');
+
+  if(panelHeaderIdx !== -1){
+    const sectionEnd = tableHeaderIdx !== -1 ? tableHeaderIdx : lines.length;
+    const leftLines = pdf_splitColumn(lines, panelHeaderIdx+1, sectionEnd, xCliente, 'left');
+    const rightLines = pdf_splitColumn(lines, panelHeaderIdx+1, sectionEnd, xCliente, 'right');
+    const empresaData = pdf_parsePanelSection(leftLines, LABELS_EMPRESA);
+    LABELS_EMPRESA.forEach(l=> pdf_setFieldRowValue(panels[0], l, empresaData[l]));
+    const clienteData = pdf_parsePanelSection(rightLines, LABELS_CLIENTE);
+    LABELS_CLIENTE.forEach(l=> pdf_setFieldRowValue(panels[1], l, clienteData[l]));
+  } else {
+    warnings.push('dados de empresa/cliente');
+  }
+
+  // ---- tabela de itens ----
+  let importedCount = 0;
+  if(tableHeaderIdx !== -1){
+    const stopIdx = pdf_findLineIndex(lines, l=> l.items.some(it=> it.text.trim()==='Valor total'), tableHeaderIdx+1);
+    const {rows, warning} = pdf_parseItemRows(lines, tableHeaderIdx, stopIdx !== -1 ? stopIdx : lines.length);
+    if(warning) warnings.push(warning);
+    if(rows.length){
+      tbody.innerHTML = '';
+      window.__allDetailRecalcs = [];
+      rows.forEach(r=> makeRow([r.nome, r.material, r.esp, r.qtd, r.custo, r.peso]));
+      importedCount = rows.length;
+      recalcGrand();
+    } else {
+      warnings.push('linhas da tabela de itens');
+    }
+  } else {
+    warnings.push('tabela de itens');
+  }
+
+  if(importedCount > 0){
+    let msg = `PDF importado: ${importedCount} linha(s) recarregada(s)`;
+    toast(msg);
+  } else {
+    toast('Não foi possível reconhecer este PDF como um orçamento deste sistema.');
+  }
+  if(warnings.length){
+    setTimeout(()=> toast('Confira manualmente: ' + warnings.join(', ')), 2400);
+  }
+}
+
+document.getElementById('btnImportPdf').addEventListener('click', ()=>{
+  if(!window.pdfjsLib){
+    toast('Biblioteca de leitura de PDF não carregou. Verifique sua conexão com a internet.');
+    return;
+  }
+  const tbodyHasContent = tbody.querySelectorAll('tr.item-row').length > 0;
+  if(tbodyHasContent && !confirm('Importar o PDF vai substituir os itens e os dados de empresa/cliente atuais. Continuar?')){
+    return;
+  }
+  document.getElementById('pdfFileInput').click();
+});
+document.getElementById('pdfFileInput').addEventListener('change', (e)=>{
+  const file = e.target.files[0];
+  if(file) importOrcamentoPdf(file);
+  e.target.value = '';
+});
+/* ================= FIM IMPORTAR ORÇAMENTO EM PDF ================= */
+
+window.__allDetailRecalcs = [];
+
+const tbody = document.getElementById('itemsBody');
+const grandTotalEl = document.getElementById('grandTotal');
+const pesoTotalEl = document.getElementById('pesoTotal');
+
+const seedRows = [
+  ["4114-EM-LBN-0010","CARBONO","1","2","9.62"],
+  ["4114-EM-LBN-0061","CARBONO","1","4","0.72"],
+  ["4114-EM-LBN-0006","CARBONO","2","2","4.77"],
+  ["4114-EM-LBN-0042","CARBONO","2","2","0.46"],
+  ["4114-EM-LBN-0068","CARBONO","2","4","0.69"],
+];
+
+function fmtBRL(n){
+  return n.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+}
+function parseNum(str){
+  if(str === null || str === undefined) return 0;
+  let s = String(str).trim();
+  if(s === '') return 0;
+  s = s.replace(/[^\d,.\-]/g,'');
+  // handle "1.234,56" (BR) vs "1234.56" (US)
+  if(s.includes(',') && s.includes('.')){
+    s = s.replace(/\./g,'').replace(',', '.');
+  } else if(s.includes(',')){
+    s = s.replace(',', '.');
+  }
+  const v = parseFloat(s);
+  return isNaN(v) ? 0 : v;
+}
+
+function makeRow(data){
+  data = data || ["","","","","","",""];
+  const tr = document.createElement('tr');
+  tr.className = 'item-row';
+  tr.innerHTML = `
+    <td class="exp"><button type="button" data-action="toggle-detail" title="Detalhar peça / importar DXF">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 6l6 6-6 6"/></svg>
+    </button></td>
+    <td><input class="cell" data-f="nome" value="${escapeHtml(data[0]||'')}" placeholder="Código / nome"></td>
+    <td><input class="cell" data-f="material" value="${escapeHtml(data[1]||'')}" placeholder="Material"></td>
+    <td class="num"><input class="cell" data-f="esp" value="${escapeHtml(data[2]||'')}" placeholder="0" inputmode="decimal"></td>
+    <td class="num"><input class="cell" data-f="qtd" value="${escapeHtml(data[3]||'')}" placeholder="0" inputmode="decimal"></td>
+    <td class="num"><input class="cell" data-f="custo" value="${escapeHtml(data[4]||'')}" placeholder="0,00" inputmode="decimal"></td>
+    <td class="num"><input class="cell" data-f="peso" value="${escapeHtml(data[5]||'')}" placeholder="0,000" inputmode="decimal"></td>
+    <td class="num valorkg-col"><span class="cell" data-f="valorKgRow" style="display:inline-block;padding:9px 10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--good);">R$ 0,00</span></td>
+    <td class="total"><span data-f="total">R$ 0,00</span></td>
+    <td class="rowop"><button title="Remover linha" data-action="del">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+    </button></td>
+  `;
+  tbody.appendChild(tr);
+
+  const detailTr = document.createElement('tr');
+  detailTr.className = 'detail-row';
+  detailTr.innerHTML = `
+    <td colspan="10">
+      <div class="detail-wrap">
+        <div class="detail-title">Cálculo pelo DXF — área, perímetro e custo detalhado da peça</div>
+        <div class="dxf-row">
+          <button type="button" class="dxf-btn" data-action="import-dxf">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 21h16"/></svg>
+            Importar DXF
+          </button>
+          <input type="file" accept=".dxf" data-f="dxfFile" style="display:none">
+          <span class="dxf-filename" data-f="dxfFilename">Nenhum arquivo importado</span>
+        </div>
+        <div class="dxf-warning" data-f="dxfWarning" style="display:none;"></div>
+        <div class="detail-grid">
+          <div class="detail-field"><label>Área (cm²)</label><input data-f="area" value="0" inputmode="decimal"></div>
+          <div class="detail-field"><label>Perímetro de corte (mm)</label><input data-f="perimetro" value="0" inputmode="decimal"></div>
+          <div class="detail-field"><label>Densidade do material</label>
+            <select data-f="densidade">
+              <option value="7.85">Aço Carbono (7,85 g/cm³)</option>
+              <option value="8.00">Aço Inox (8,00 g/cm³)</option>
+              <option value="2.70">Alumínio (2,70 g/cm³)</option>
+              <option value="7.85">Galvanizado (7,85 g/cm³)</option>
+              <option value="8.40">Latão (8,40 g/cm³)</option>
+              <option value="8.96">Cobre (8,96 g/cm³)</option>
+              <option value="custom">Personalizada…</option>
+            </select>
+          </div>
+          <div class="detail-field" data-f="densidadeCustomWrap" style="display:none;"><label>Densidade personalizada (g/cm³)</label><input data-f="densidadeCustom" value="7,85" inputmode="decimal"></div>
+          <div class="detail-field"><label>Preço do Kg (R$)</label><input data-f="precoKg" value="0" inputmode="decimal"></div>
+          <div class="detail-field"><label>Peso calculado (kg)</label><span class="out" data-f="pesoCalc">0,000</span></div>
+          <div class="detail-field"><label>Tempo de corte</label><span class="out" data-f="tempoCorte">0,00 min/pç</span></div>
+          <div class="detail-field"><label>Custo material</label><span class="out" data-f="custoMaterial">R$ 0,00</span></div>
+          <div class="detail-field"><label>Custo corte (laser)</label><span class="out" data-f="custoCorte">R$ 0,00</span></div>
+        </div>
+        <div class="detail-summary">
+          <span>Custo total da peça (qtd. inclusa): <b data-f="custoTotalPeca">R$ 0,00</b></span>
+          <span>Custo unitário aplicado na tabela: <b data-f="custoUnitAplicado">R$ 0,00</b></span>
+        </div>
+      </div>
+    </td>
+  `;
+  tbody.appendChild(detailTr);
+
+  wireRow(tr, detailTr);
+  return tr;
+}
+
+function nextItemRow(tr){
+  let sib = tr.nextElementSibling;
+  while(sib && !sib.classList.contains('item-row')) sib = sib.nextElementSibling;
+  return sib;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function wireRow(tr, detailTr){
+  const qtd = tr.querySelector('[data-f="qtd"]');
+  const esp = tr.querySelector('[data-f="esp"]');
+  const custo = tr.querySelector('[data-f="custo"]');
+  const peso = tr.querySelector('[data-f="peso"]');
+  const valorKgSpan = tr.querySelector('[data-f="valorKgRow"]');
+  const totalSpan = tr.querySelector('[data-f="total"]');
+  const del = tr.querySelector('[data-action="del"]');
+  const toggleBtn = tr.querySelector('[data-action="toggle-detail"]');
+
+  function recalcRow(){
+    const q = parseNum(qtd.value);
+    const c = parseNum(custo.value);
+    const p = parseNum(peso.value);
+    const rowTotal = q * c;
+    totalSpan.textContent = fmtBRL(rowTotal);
+    valorKgSpan.textContent = p > 0 ? fmtBRL(rowTotal / p) : 'R$ 0,00';
+    recalcGrand();
+  }
+
+  // ---------- DXF / detail panel ----------
+  const areaInput = detailTr.querySelector('[data-f="area"]');
+  const perimInput = detailTr.querySelector('[data-f="perimetro"]');
+  const densidadeSelect = detailTr.querySelector('[data-f="densidade"]');
+  const densidadeCustomWrap = detailTr.querySelector('[data-f="densidadeCustomWrap"]');
+  const densidadeCustomInput = detailTr.querySelector('[data-f="densidadeCustom"]');
+  const precoKgInput = detailTr.querySelector('[data-f="precoKg"]');
+  const pesoCalcSpan = detailTr.querySelector('[data-f="pesoCalc"]');
+  const tempoCorteSpan = detailTr.querySelector('[data-f="tempoCorte"]');
+  const custoMaterialSpan = detailTr.querySelector('[data-f="custoMaterial"]');
+  const custoCorteSpan = detailTr.querySelector('[data-f="custoCorte"]');
+  const custoTotalPecaSpan = detailTr.querySelector('[data-f="custoTotalPeca"]');
+  const custoUnitAplicadoSpan = detailTr.querySelector('[data-f="custoUnitAplicado"]');
+  const dxfImportBtn = detailTr.querySelector('[data-action="import-dxf"]');
+  const dxfFileInput = detailTr.querySelector('[data-f="dxfFile"]');
+  const dxfFilenameSpan = detailTr.querySelector('[data-f="dxfFilename"]');
+  const dxfWarningDiv = detailTr.querySelector('[data-f="dxfWarning"]');
+
+  function getDensidade(){
+    if(densidadeSelect.value === 'custom') return parseNum(densidadeCustomInput.value);
+    return parseFloat(densidadeSelect.value);
+  }
+
+  function computeDetail(){
+    const area = parseNum(areaInput.value);       // cm2
+    const perim = parseNum(perimInput.value);      // mm
+    const espMm = parseNum(esp.value);              // mm
+    const q = parseNum(qtd.value);
+    const densidade = getDensidade();
+    const precoKg = parseNum(precoKgInput.value);
+    const precoHora = (Math.abs(densidade-8)<0.01 && window.__horaInox && window.__horaInox()>0) ? window.__horaInox() : parseNum(document.getElementById('precoHoraLaser').value);
+    const veloc = parseNum(document.getElementById('velocidadeCorte').value);
+
+    const pesoUnit = area * espMm * densidade / 10000; // kg / peça
+    const pesoTotalRow = pesoUnit * q;
+    const tempoPecaMin = veloc > 0 ? (perim/1000) / veloc : 0;
+    const tempoTotalMin = tempoPecaMin * q;
+    const custoMaterial = pesoTotalRow * precoKg;
+    const custoCorte = (tempoTotalMin/60) * precoHora;
+    const custoTotalPeca = custoMaterial + custoCorte;
+    const custoUnitApplied = q > 0 ? custoTotalPeca / q : 0;
+
+    pesoCalcSpan.textContent = pesoUnit.toLocaleString('pt-BR',{minimumFractionDigits:3,maximumFractionDigits:3});
+    tempoCorteSpan.textContent = tempoPecaMin.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}) + ' min/pç';
+    custoMaterialSpan.textContent = fmtBRL(custoMaterial);
+    custoCorteSpan.textContent = fmtBRL(custoCorte);
+    custoTotalPecaSpan.textContent = fmtBRL(custoTotalPeca);
+    custoUnitAplicadoSpan.textContent = fmtBRL(custoUnitApplied);
+
+    if(area > 0){
+      peso.value = pesoTotalRow.toFixed(3).replace('.',',');
+      custo.value = custoUnitApplied.toFixed(2).replace('.',',');
+      recalcRow();
+    }
+  }
+
+  areaInput.addEventListener('input', computeDetail);
+  perimInput.addEventListener('input', computeDetail);
+  precoKgInput.addEventListener('input', computeDetail);
+  densidadeCustomInput.addEventListener('input', computeDetail);
+  densidadeSelect.addEventListener('change', ()=>{
+    densidadeCustomWrap.style.display = densidadeSelect.value === 'custom' ? 'flex' : 'none';
+    computeDetail();
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    detailTr.classList.toggle('open');
+    toggleBtn.classList.toggle('open');
+  });
+
+  dxfImportBtn.addEventListener('click', ()=> dxfFileInput.click());
+  dxfFileInput.addEventListener('change', (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      try{
+        const result = analyzeDxf(ev.target.result);
+        areaInput.value = result.areaCm2.toFixed(4).replace('.',',');
+        perimInput.value = result.perimeterMm.toFixed(2).replace('.',',');
+        dxfFilenameSpan.textContent = file.name;
+        if(result.warnings && result.warnings.length){
+          dxfWarningDiv.style.display = 'block';
+          dxfWarningDiv.textContent = '⚠ ' + result.warnings.join(' ');
+        } else {
+          dxfWarningDiv.style.display = 'none';
+        }
+        computeDetail();
+        if(!detailTr.classList.contains('open')){
+          detailTr.classList.add('open');
+          toggleBtn.classList.add('open');
+        }
+        toast(`DXF importado: área ${result.areaCm2.toFixed(2)} cm², perímetro ${result.perimeterMm.toFixed(1)} mm`);
+      }catch(err){
+        toast('Não foi possível ler este arquivo DXF');
+      }
+    };
+    reader.readAsText(file);
+    dxfFileInput.value = '';
+  });
+
+  window.__allDetailRecalcs.push(computeDetail);
+
+  // ---------- main row events ----------
+  function onQtdOrEspChange(){
+    if(parseNum(areaInput.value) > 0){
+      computeDetail(); // writes peso/custo and calls recalcRow internally
+    } else {
+      recalcRow();
+    }
+  }
+  qtd.addEventListener('input', onQtdOrEspChange);
+  esp.addEventListener('input', onQtdOrEspChange);
+  custo.addEventListener('input', recalcRow);
+  peso.addEventListener('input', recalcRow);
+  del.addEventListener('click', ()=>{
+    window.__allDetailRecalcs = window.__allDetailRecalcs.filter(fn=>fn!==computeDetail);
+    detailTr.remove();
+    tr.remove();
+    recalcGrand();
+    toast('Linha removida');
+  });
+
+  // paste handling: if pasted content has tabs/newlines, spread across cells
+  tr.querySelectorAll('input.cell').forEach(inp=>{
+    inp.addEventListener('paste', (e)=>{
+      const text = (e.clipboardData || window.clipboardData).getData('text');
+      if(text && (text.includes('\t') || text.includes('\n'))){
+        e.preventDefault();
+        pasteBlock(text, tr, inp);
+      }
+    });
+  });
+
+  recalcRow();
+  computeDetail();
+}
+
+function fmtKg(n){
+  return n.toLocaleString('pt-BR', {minimumFractionDigits:3, maximumFractionDigits:3});
+}
+
+function recalcGrand(){
+  let sum = 0;
+  let pesoSum = 0;
+  tbody.querySelectorAll('tr.item-row').forEach(tr=>{
+    const q = parseNum(tr.querySelector('[data-f="qtd"]').value);
+    const c = parseNum(tr.querySelector('[data-f="custo"]').value);
+    const p = parseNum(tr.querySelector('[data-f="peso"]').value);
+    sum += q * c;
+    pesoSum += p;
+  });
+  grandTotalEl.textContent = fmtBRL(sum);
+  pesoTotalEl.textContent = fmtKg(pesoSum);
+  recalcValorPorKg(sum, pesoSum);
+}
+
+function recalcValorPorKg(grandSum, pesoSum){
+  const sum = (typeof grandSum === 'number') ? grandSum : parseNum(grandTotalEl.textContent);
+  const peso = (typeof pesoSum === 'number') ? pesoSum : parseNum(pesoTotalEl.textContent);
+  document.getElementById('valorPorKg').textContent = peso > 0 ? fmtBRL(sum / peso) : 'R$ 0,00';
+}
+
+const FIELD_ORDER = ['nome','material','esp','qtd','custo','peso'];
+
+function pasteBlock(text, startRow, startInput){
+  const rows = text.replace(/\r/g,'').split('\n').filter((r,i,arr)=> !(i===arr.length-1 && r===''));
+  const startFieldIndex = FIELD_ORDER.indexOf(startInput.dataset.f);
+  let currentRow = startRow;
+
+  rows.forEach((rowText, rIdx)=>{
+    const cols = rowText.split('\t');
+    if(rIdx > 0){
+      currentRow = nextItemRow(currentRow) || makeRow();
+    }
+    cols.forEach((val, cIdx)=>{
+      const fieldIdx = startFieldIndex + cIdx;
+      if(fieldIdx >= FIELD_ORDER.length) return;
+      const field = FIELD_ORDER[fieldIdx];
+      const input = currentRow.querySelector(`[data-f="${field}"]`);
+      if(input) input.value = val.trim();
+    });
+    currentRow.querySelector('[data-f="qtd"]').dispatchEvent(new Event('input'));
+  });
+  toast(`${rows.length} linha(s) colada(s)`);
+}
+
+document.getElementById('btnAddRow').addEventListener('click', ()=>{
+  const tr = makeRow();
+  tr.querySelector('[data-f="nome"]').focus();
+});
+
+document.getElementById('btnClear').addEventListener('click', ()=>{
+  if(confirm('Remover todas as linhas de itens?')){
+    tbody.innerHTML = '';
+    window.__allDetailRecalcs = [];
+    recalcGrand();
+    makeRow();
+    toast('Linhas limpas');
+  }
+});
+
+/* ---------- mostrar/ocultar coluna "Valor do Kg" ---------- */
+const tfootLbl = document.getElementById('tfootLbl');
+const toggleValorKgBtn = document.getElementById('btnToggleValorKg');
+const toggleValorKgLabel = document.getElementById('toggleValorKgLabel');
+
+function setValorKgVisible(show){
+  document.body.classList.toggle('hide-valorkg', !show);
+  if(tfootLbl) tfootLbl.colSpan = show ? 8 : 7;
+  toggleValorKgLabel.textContent = show ? 'Ocultar Valor/Kg' : 'Mostrar Valor/Kg';
+  toggleValorKgBtn.title = show ? 'Ocultar a coluna Valor do Kg' : 'Mostrar a coluna Valor do Kg';
+  try{ localStorage.setItem('cektec_showValorKg', show ? '1' : '0'); }catch(err){}
+}
+
+let valorKgVisible = true;
+try{
+  const saved = localStorage.getItem('cektec_showValorKg');
+  if(saved === '0') valorKgVisible = false;
+}catch(err){}
+setValorKgVisible(valorKgVisible);
+
+toggleValorKgBtn.addEventListener('click', ()=>{
+  valorKgVisible = !valorKgVisible;
+  setValorKgVisible(valorKgVisible);
+  toast(valorKgVisible ? 'Coluna Valor do Kg exibida' : 'Coluna Valor do Kg ocultada');
+});
+
+document.getElementById('btnPaste').addEventListener('click', async ()=>{
+  try{
+    const text = await navigator.clipboard.readText();
+    if(!text || !text.trim()){ toast('Área de transferência vazia'); return; }
+    const itemRows = tbody.querySelectorAll('tr.item-row');
+    let target = itemRows.length ? itemRows[itemRows.length-1].querySelector('[data-f="nome"]') : null;
+    if(!target){ const tr = makeRow(); target = tr.querySelector('[data-f="nome"]'); }
+    // if last row already has content, add a fresh row to paste into
+    if(target.value.trim() !== ''){
+      const tr = makeRow();
+      target = tr.querySelector('[data-f="nome"]');
+    }
+    pasteBlock(text, target.closest('tr'), target);
+  }catch(err){
+    toast('Não foi possível ler a área de transferência — cole diretamente em uma célula (Ctrl+V)');
+  }
+});
+
+document.getElementById('precoHoraLaser').addEventListener('input', ()=>{
+  window.__allDetailRecalcs.forEach(fn=>fn());
+});
+document.getElementById('velocidadeCorte').addEventListener('input', ()=>{
+  window.__allDetailRecalcs.forEach(fn=>fn());
+});
+
+document.getElementById('btnPdf').addEventListener('click', ()=>{
+  window.print();
+});
+
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> el.classList.remove('show'), 2200);
+}
+
+document.getElementById('genDate').textContent = new Date().toLocaleDateString('pt-BR');
+
+seedRows.forEach(makeRow);
+recalcGrand();
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* ================= EXPORTAR EXCEL / CSV ================= */
+(function(){
+  function collect(){
+    const sheet=document.getElementById('sheet');
+    const vals=[...sheet.querySelectorAll('.panel')].map(p=>[...p.querySelectorAll('.field-row')].map(r=>[r.querySelector('.k').textContent.trim(), r.querySelector('.v').textContent.trim()]));
+    const rows=[...document.querySelectorAll('#itemsBody tr.item-row')].map(tr=>{
+      const g=f=>tr.querySelector('[data-f="'+f+'"]').value.trim();
+      return {nome:g('nome'),material:g('material'),esp:parseNum(g('esp')),qtd:parseNum(g('qtd')),custo:parseNum(g('custo')),peso:parseNum(g('peso'))};
+    }).filter(r=>r.nome||r.material||r.qtd||r.custo);
+    return {
+      num:document.getElementById('orcNum').textContent.trim(),
+      empresa:vals[0]||[], cliente:vals[1]||[], rows,
+      showKg:!document.body.classList.contains('hide-valorkg'),
+      laser:parseNum(document.getElementById('precoHoraLaser').value),
+      veloc:parseNum(document.getElementById('velocidadeCorte').value)
+    };
+  }
+  function fname(d,ext){
+    const c=(d.cliente.find(x=>x[0]==='Cliente')||[0,''])[1].replace(/[^\w\- ]+/g,'').trim().slice(0,30).replace(/\s+/g,'_');
+    return 'orcamento-'+(d.num||'sem-numero')+(c?'-'+c:'')+'.'+ext;
+  }
+  function exportXlsx(){
+    if(!window.XLSX){ toast('Biblioteca do Excel não carregou. Verifique a internet.'); return; }
+    const d=collect(), n=d.rows.length;
+    const cols=d.showKg?8:7;                       // com ou sem coluna Valor do Kg
+    const aoa=[];
+    aoa.push(['CEKTEC PERFILADOS LTDA.']);
+    aoa.push(['Orçamento nº', d.num]);
+    aoa.push([]);
+    const maxp=Math.max(d.empresa.length,d.cliente.length);
+    aoa.push(['EMPRESA','','','CLIENTE']);
+    for(let i=0;i<maxp;i++){
+      const e=d.empresa[i]||['',''], c=d.cliente[i]||['',''];
+      aoa.push([e[0],e[1],'',c[0],c[1]]);
+    }
+    aoa.push([]);
+    const hr=aoa.length+1;                         // linha (1-based) do cabeçalho
+    const head=['Nome Peça','Material','Espessura','Quantidade','Custo p/ Unidade','Peso (kg)'];
+    if(d.showKg) head.push('Valor do Kg'); head.push('Valor Total');
+    aoa.push(head);
+    const first=hr+1, last=hr+n;
+    const ws=XLSX.utils.aoa_to_sheet(aoa);
+    const totCol=d.showKg?'H':'G';
+    let sumTot=0,sumPeso=0;
+    d.rows.forEach((r,i)=>{
+      const R=first+i, row=i; const tot=r.qtd*r.custo; sumTot+=tot; sumPeso+=r.peso;
+      const put=(c,cell)=>{ws[c+R]=cell;};
+      put('A',{t:'s',v:r.nome}); put('B',{t:'s',v:r.material});
+      put('C',{t:'n',v:r.esp}); put('D',{t:'n',v:r.qtd});
+      put('E',{t:'n',v:r.custo,z:'"R$" #,##0.00'});
+      put('F',{t:'n',v:r.peso,z:'0.000'});
+      if(d.showKg) put('G',{t:'n',f:`IF(F${R}>0,H${R}/F${R},0)`,v:r.peso>0?tot/r.peso:0,z:'"R$" #,##0.00'});
+      put(totCol,{t:'n',f:`D${R}*E${R}`,v:tot,z:'"R$" #,##0.00'});
+    });
+    const T=last+1;
+    ws['A'+T]={t:'s',v:'Valor total'};
+    ws['F'+T]={t:'n',f:`SUM(F${first}:F${last})`,v:sumPeso,z:'0.000'};
+    if(d.showKg) ws['G'+T]={t:'n',f:`IF(F${T}>0,H${T}/F${T},0)`,v:sumPeso>0?sumTot/sumPeso:0,z:'"R$" #,##0.00'};
+    ws[totCol+T]={t:'n',f:`SUM(${totCol}${first}:${totCol}${last})`,v:sumTot,z:'"R$" #,##0.00'};
+    ws['!ref']='A1:'+totCol+T;
+    ws['!cols']=[{wch:26},{wch:14},{wch:12},{wch:12},{wch:18},{wch:12},{wch:16},{wch:16}].slice(0,cols);
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'Orçamento');
+    XLSX.writeFile(wb,fname(d,'xlsx'));
+    toast('Excel exportado!');
+  }
+  function exportCsv(){
+    const d=collect(), q=v=>'"'+String(v).replace(/"/g,'""')+'"', b=v=>String(v).replace('.',',');
+    const head=['Nome Peça','Material','Espessura','Quantidade','Custo p/ Unidade','Peso (kg)'];
+    if(d.showKg) head.push('Valor do Kg'); head.push('Valor Total');
+    let tot=0,peso=0; const out=[head.map(q).join(';')];
+    d.rows.forEach(r=>{
+      const t=r.qtd*r.custo; tot+=t; peso+=r.peso;
+      const line=[q(r.nome),q(r.material),b(r.esp),b(r.qtd),b(r.custo.toFixed(2)),b(r.peso.toFixed(3))];
+      if(d.showKg) line.push(b((r.peso>0?t/r.peso:0).toFixed(2)));
+      line.push(b(t.toFixed(2))); out.push(line.join(';'));
+    });
+    const foot=['Valor total','','','','',b(peso.toFixed(3))];
+    if(d.showKg) foot.push(b((peso>0?tot/peso:0).toFixed(2)));
+    foot.push(b(tot.toFixed(2))); out.push(foot.map(v=>/^"/.test(v)||v===''?v:q(v)).join(';'));
+    const blob=new Blob(['\ufeff'+out.join('\r\n')],{type:'text/csv;charset=utf-8'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname(d,'csv');
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    toast('CSV exportado!');
+  }
+  document.getElementById('btnExportXlsx').addEventListener('click',exportXlsx);
+  document.getElementById('btnExportCsv').addEventListener('click',exportCsv);
+})();
+</script>
+
+<script>
+/* ================= DXF ENGINE 2 — leitor robusto + correção de contornos abertos ================= */
+(function(){
+const num=v=>{const n=parseFloat(v);return isNaN(n)?0:n};
+const gc=(c,k)=>{const f=c.find(x=>x.code===k);return f?f.value:undefined};
+const d2=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const ap=(M,p)=>({x:M[0]*p.x+M[2]*p.y+M[4],y:M[1]*p.x+M[3]*p.y+M[5]});
+const mul=(P,Q)=>[P[0]*Q[0]+P[2]*Q[1],P[1]*Q[0]+P[3]*Q[1],P[0]*Q[2]+P[2]*Q[3],P[1]*Q[2]+P[3]*Q[3],P[0]*Q[4]+P[2]*Q[5]+P[4],P[1]*Q[4]+P[3]*Q[5]+P[5]];
+const IGN=/defpoints|cota|dimens|^dim|text|anota|constr|hatch/i;
+const GEO=['LINE','CIRCLE','ARC','LWPOLYLINE','POLYLINE','SPLINE','ELLIPSE'];
+const UNITS={1:25.4,2:304.8,3:1609344,4:1,5:10,6:1000,7:1e6,8:0.0000254,9:0.0254,10:914.4,14:100,15:10000};
+const UNAME={1:'polegadas',2:'pés',5:'cm',6:'metros',14:'dm'};
+
+function sections(items){const S={};let cur=null;for(let i=0;i<items.length;i++){const it=items[i];
+  if(it.code===0&&it.value==='SECTION'){const n=items[i+1]&&items[i+1].code===2?items[i+1].value.toUpperCase():'';cur=S[n]=[];i++;continue;}
+  if(it.code===0&&it.value==='ENDSEC'){cur=null;continue;} if(cur)cur.push(it);}return S;}
+function split(list){const o=[];let c=null;for(const it of list){if(it.code===0){if(c)o.push(c);c={type:it.value,codes:[]};}else if(c)c.codes.push(it);}if(c)o.push(c);return o;}
+
+function deBoor(p,K,C,t){const n=C.length;let k=n-1;for(let i=p;i<n;i++){if(t>=K[i]&&t<K[i+1]){k=i;break;}}
+  const d=[];for(let j=0;j<=p;j++){const c=C[Math.min(n-1,Math.max(0,j+k-p))];d.push({x:c.x*c.w,y:c.y*c.w,w:c.w});}
+  for(let r=1;r<=p;r++)for(let j=p;j>=r;j--){const den=K[j+1+k-r]-K[j+k-p],a=den===0?0:(t-K[j+k-p])/den;
+    d[j]={x:(1-a)*d[j-1].x+a*d[j].x,y:(1-a)*d[j-1].y+a*d[j].y,w:(1-a)*d[j-1].w+a*d[j].w};}
+  return {x:d[p].x/d[p].w,y:d[p].y/d[p].w};}
+function splinePts(codes){
+  const deg=num(gc(codes,71)),K=codes.filter(c=>c.code===40).map(c=>num(c.value)),W=codes.filter(c=>c.code===41).map(c=>num(c.value));
+  const ctrl=dxf_readLwVertices(codes).map((v,i)=>({x:v.x,y:v.y,w:W[i]||1})),fit=dxf_readSplineFitPoints(codes);
+  if(deg>=1&&ctrl.length>deg&&K.length===ctrl.length+deg+1){const t0=K[deg],t1=K[K.length-deg-1],n=Math.max(40,ctrl.length*16),o=[];
+    for(let k=0;k<=n;k++)o.push(deBoor(deg,K,ctrl,t0+(t1-t0)*k/n));return o;}
+  return fit.length>=2?fit:ctrl.map(c=>({x:c.x,y:c.y}));}
+
+window.analyzeDxf=function(text){
+  const W=[];
+  if(/^AutoCAD Binary DXF/.test(text))return{areaCm2:0,perimeterMm:0,loopCount:0,warnings:['DXF binário não suportado. Salve como DXF ASCII (texto) no CAD.']};
+  const S=sections(dxf_readGroups(text));
+  let sc=1;const H=S.HEADER||[];for(let i=0;i<H.length-1;i++)if(H[i].code===9&&H[i].value==='$INSUNITS'){const u=num(H[i+1].value);if(UNITS[u]){sc=UNITS[u];if(sc!==1)W.push('Unidade do DXF em '+(UNAME[u]||'outra unidade')+' — convertido para mm.');}}
+  const B={};let cb=null;for(const e of split(S.BLOCKS||[])){if(e.type==='BLOCK'){cb=B[gc(e.codes,2)]={bx:num(gc(e.codes,10)),by:num(gc(e.codes,20)),ents:[]};}else if(e.type==='ENDBLK')cb=null;else if(cb)cb.ents.push(e);}
+  const P=[];let ign=0;
+  function walk(ents,M,dep){
+    for(let i=0;i<ents.length;i++){const e=ents[i],t=e.type,lay=gc(e.codes,8)||'';
+      if(t==='VERTEX'||t==='SEQEND')continue;
+      if(IGN.test(lay)){if(GEO.includes(t)||t==='INSERT')ign++;continue;}
+      if(t==='INSERT'){const b=B[gc(e.codes,2)];if(!b||dep>8)continue;
+        const sx=gc(e.codes,41)!==undefined?num(gc(e.codes,41)):1,sy=gc(e.codes,42)!==undefined?num(gc(e.codes,42)):sx,r=num(gc(e.codes,50))*Math.PI/180,co=Math.cos(r),si=Math.sin(r);
+        const m=[co*sx,si*sx,-si*sy,co*sy,0,0],bx=m[0]*b.bx+m[2]*b.by,by=m[1]*b.bx+m[3]*b.by;m[4]=num(gc(e.codes,10))-bx;m[5]=num(gc(e.codes,20))-by;
+        walk(b.ents,mul(M,m),dep+1);continue;}
+      const mir=num(gc(e.codes,230))<0,tp=a=>a.map(p=>ap(M,mir?{x:-p.x,y:p.y}:p)),c=e.codes;let pts=null,closed=false;
+      if(t==='LINE'){pts=[{x:num(gc(c,10)),y:num(gc(c,20))},{x:num(gc(c,11)),y:num(gc(c,21))}];}
+      else if(t==='CIRCLE'){pts=dxf_circleToPoints(num(gc(c,10)),num(gc(c,20)),num(gc(c,40)));closed=true;}
+      else if(t==='ARC'){pts=dxf_arcToPoints(num(gc(c,10)),num(gc(c,20)),num(gc(c,40)),num(gc(c,50)),num(gc(c,51)));}
+      else if(t==='LWPOLYLINE'){closed=(num(gc(c,70))&1)===1;pts=dxf_expandBulgeChain(dxf_readLwVertices(c),closed);}
+      else if(t==='POLYLINE'){const fl=num(gc(c,70));closed=(fl&1)===1;const v=[];let j=i+1;
+        while(j<ents.length&&ents[j].type==='VERTEX'){const vf=num(gc(ents[j].codes,70));if(!(vf&16))v.push({x:num(gc(ents[j].codes,10)),y:num(gc(ents[j].codes,20)),bulge:num(gc(ents[j].codes,42))});j++;}
+        if(!(fl&(16|64)))pts=dxf_expandBulgeChain(v,closed);}
+      else if(t==='SPLINE'){pts=splinePts(c);closed=(num(gc(c,70))&1)===1;}
+      else if(t==='ELLIPSE'){const cx=num(gc(c,10)),cy=num(gc(c,20)),mx=num(gc(c,11)),my=num(gc(c,21)),ra=num(gc(c,40))||1;let a0=gc(c,41)!==undefined?num(gc(c,41)):0,a1=gc(c,42)!==undefined?num(gc(c,42)):Math.PI*2;
+        if(a1<=a0)a1+=Math.PI*2;closed=Math.abs(a1-a0-Math.PI*2)<1e-6;pts=[];const n=Math.max(60,Math.ceil((a1-a0)*40));
+        for(let k=0;k<=n;k++){const a=a0+(a1-a0)*k/n;pts.push({x:cx+mx*Math.cos(a)-my*ra*Math.sin(a),y:cy+my*Math.cos(a)+mx*ra*Math.sin(a)});}}
+      if(pts&&pts.length>=2)P.push({pts:tp(pts),closed});
+    }}
+  walk(split(S.ENTITIES||[]),[1,0,0,1,0,0],0);
+  if(!P.length)return{areaCm2:0,perimeterMm:0,loopCount:0,warnings:['Nenhuma geometria reconhecida (LINE, ARC, CIRCLE, POLYLINE, SPLINE, ELLIPSE, blocos).'].concat(W)};
+  // duplicatas
+  const seen=new Set(),U=[];let dup=0;
+  for(const p of P){const a=p.pts[0],b=p.pts[p.pts.length-1],k1=a.x.toFixed(2)+','+a.y.toFixed(2),k2=b.x.toFixed(2)+','+b.y.toFixed(2),L=p.pts.reduce((s,q,i)=>i?s+d2(q,p.pts[i-1]):0,0).toFixed(1),mid=p.pts[p.pts.length>>1];
+    const key=[k1,k2].sort().join('|')+'|'+L+'|'+mid.x.toFixed(1)+','+mid.y.toFixed(1)+'|'+p.closed;if(seen.has(key)){dup++;continue;}seen.add(key);U.push(p);}
+  if(dup)W.push(dup+' entidade(s) duplicada(s) removida(s).');
+  if(ign)W.push(ign+' entidade(s) de cota/texto/construção ignorada(s).');
+  let x0=1e18,y0=1e18,x1=-1e18,y1=-1e18;U.forEach(p=>p.pts.forEach(q=>{x0=Math.min(x0,q.x);y0=Math.min(y0,q.y);x1=Math.max(x1,q.x);y1=Math.max(y1,q.y);}));
+  const diag=Math.hypot(x1-x0,y1-y0),maxGap=Math.max(0.2,Math.min(5,diag*0.01/sc)*1)*sc; // folga máxima automática (unid. do desenho)
+  const tols=[0.01,0.05,0.2,0.5,1,2,5].map(t=>t/ (sc===1?1:1)).filter((t,i)=>i===0||t*1<=maxGap/sc*sc);
+  const loops=[];let open=[];U.forEach(p=>{if(p.closed&&p.pts.length>2)loops.push(p.pts.slice());else open.push(p.pts.slice());});
+  const fixes=[];
+  function link(A,Bc,tol){const hA=A[0],tA=A[A.length-1],hB=Bc[0],tB=Bc[Bc.length-1];
+    const c=[[d2(tA,hB),()=>A.concat(Bc.slice(1))],[d2(tA,tB),()=>A.concat(Bc.slice(0,-1).reverse())],[d2(hA,tB),()=>Bc.concat(A.slice(1))],[d2(hA,hB),()=>Bc.slice().reverse().concat(A.slice(1))]];
+    let best=null;for(const x of c)if(x[0]<=tol&&(!best||x[0]<best[0]))best=x;return best?{gap:best[0],m:best[1]()}:null;}
+  for(const tol of tols){let ch=open,changed=true;
+    while(changed){changed=false;
+      for(let i=0;i<ch.length;i++){let A=ch[i],again=true;
+        while(again){again=false;
+          if(A.length>2&&d2(A[0],A[A.length-1])<=tol){const g=d2(A[0],A[A.length-1]);if(g>0.011)fixes.push(g);loops.push(A);ch.splice(i,1);i--;changed=true;break;}
+          for(let j=0;j<ch.length;j++){if(j===i)continue;const r=link(A,ch[j],tol);
+            if(r){if(r.gap>0.011)fixes.push(r.gap);A=r.m;ch[i]=A;ch.splice(j,1);if(j<i)i--;again=true;changed=true;break;}}
+        }}}
+    open=ch;}
+  // contornos ainda abertos: fecha com reta ou trata como linha solta
+  let forced=0,fmax=0,loose=0,looseLen=0;
+  for(const c of open){const len=c.reduce((s,q,i)=>i?s+d2(q,c[i-1]):0,0);
+    if(c.length>=3){const cl=c.concat([c[0]]),ar=Math.abs(dxf_polygonArea(cl));
+      if(ar/(len*len||1)>1e-4){const g=d2(c[0],c[c.length-1]);forced++;fmax=Math.max(fmax,g);loops.push(cl);continue;}}
+    loose++;looseLen+=len;}
+  const L=[];for(const pts of loops){if(d2(pts[0],pts[pts.length-1])>0)pts.push({x:pts[0].x,y:pts[0].y});
+    const a=Math.abs(dxf_polygonArea(pts));if(a<1e-9)continue;
+    const bb=pts.reduce((b,q)=>({x0:Math.min(b.x0,q.x),y0:Math.min(b.y0,q.y),x1:Math.max(b.x1,q.x),y1:Math.max(b.y1,q.y)}),{x0:1e18,y0:1e18,x1:-1e18,y1:-1e18});
+    const key=a.toFixed(1)+'|'+bb.x0.toFixed(1)+'|'+bb.y0.toFixed(1);if(L.some(l=>l.key===key))continue;
+    L.push({pts,a,key,bb,per:dxf_polygonPerimeter(pts)});}
+  L.sort((p,q)=>q.a-p.a);
+  let net=0,per=looseLen,parts=0;
+  L.forEach((l,i)=>{let dep=0;const n=l.pts.length-1,smp=[0,.25,.5,.75].map(f=>l.pts[Math.floor(f*n)]);
+    for(let j=0;j<i;j++){const o=L[j];if(l.bb.x0<o.bb.x0-1e-6||l.bb.x1>o.bb.x1+1e-6||l.bb.y0<o.bb.y0-1e-6||l.bb.y1>o.bb.y1+1e-6)continue;
+      if(smp.filter(p=>dxf_pointInPolygon(p,o.pts)).length>=3)dep++;}
+    if(dep%2===0){net+=l.a;parts++;}else net-=l.a;per+=l.per;});
+  if(fixes.length)W.push(fixes.length+' junção(ões) com folga de até '+Math.max(...fixes).toFixed(2).replace('.',',')+' mm corrigida(s) automaticamente.');
+  if(forced)W.push(forced+' contorno(s) aberto(s) fechado(s) com reta (falha de até '+fmax.toFixed(1).replace('.',',')+' mm) — confira a peça.');
+  if(loose)W.push(loose+' linha(s) solta(s) somada(s) ao perímetro de corte.');
+  if(parts>1)W.push(parts+' contornos externos — arquivo com mais de uma peça; a área é a soma de todas.');
+  if(!L.length)W.push('Nenhum contorno fechado foi encontrado neste arquivo DXF.');
+  let bw=0,bh=0;if(L.length){const bx0=Math.min(...L.map(l=>l.bb.x0)),bx1=Math.max(...L.map(l=>l.bb.x1)),by0=Math.min(...L.map(l=>l.bb.y0)),by1=Math.max(...L.map(l=>l.bb.y1));bw=(bx1-bx0)*sc;bh=(by1-by0)*sc;}
+  return {areaCm2:net*sc*sc/100,perimeterMm:per*sc,warnings:W,loopCount:L.length+loose,parts,bboxW:bw,bboxH:bh,bboxAreaCm2:bw*bh/100};
+};
+})();
+</script>
+<script>
+/* ================= CALCULADORA DE CORTE ================= */
+(function(){
+const KEY='cektec_corte_cfg_v1', DENS={carbono:7.85,inox:8.0};
+const def={hora:'',margem:'0',carbono:[[0.75,25,0.3,0],[1,20,0.4,0],[1.5,15,0.5,0],[2,10,0.6,0],[3,6,0.8,0],[4.75,3.5,1.2,0],[6.35,2.5,1.8,0],[8,2,2.5,0],[9.5,1.6,3,0],[12.7,1.2,4,0],[16,0.9,6,0],[19,0.7,8,0]],
+ inox:[[1,18,0.4,0],[1.5,12,0.6,0],[2,8,0.8,0],[3,4.5,1.2,0],[4,3,1.8,0],[6,1.6,3,0],[8,1,4.5,0],[10,0.6,6,0]]};
+let cfg; try{cfg=JSON.parse(localStorage.getItem(KEY))}catch(e){} if(!cfg||!cfg.carbono) cfg=JSON.parse(JSON.stringify(def));
+if(!cfg.ver||cfg.ver<2){const add={carbono:[[1.2,17,0.45,0],[2.5,8,0.7,0],[12.7,1.2,4,0]],inox:[[1.2,15,0.5,0],[2.5,6,1,0],[12.7,0.4,8,0]]};
+  for(const m in add){add[m].forEach(r=>{if(!cfg[m].some(x=>Math.abs(x[0]-r[0])<1e-9))cfg[m].push(r)});cfg[m].sort((a,b)=>a[0]-b[0]);}cfg.ver=2;}
+cfg.horaC=cfg.horaC||'';cfg.horaI=cfg.horaI||'';
+window.__horaInox=()=>parseNum(cfg.horaI);
+let items=[];
+const $=id=>document.getElementById(id), N=parseNum;
+const f=(n,d)=>(+n||0).toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(cfg))}catch(e){}};
+const hm=m=>{const t=Math.round(m*60),h=Math.floor(t/3600),mi=Math.floor(t%3600/60),sc=t%60;return h?`${h}h${String(mi).padStart(2,'0')}min`:mi?`${mi}min ${sc}s`:`${sc}s`};
+const row=(m,e)=>cfg[m].find(r=>Math.abs(r[0]-N(e))<1e-9);
+const NM={carbono:'Aço Carbono',inox:'Aço Inox'};
+
+function parseNome(raw){
+  const num=s=>parseFloat(String(s).replace(',','.'));
+  const n=raw.replace(/\.dxf$/i,'').replace(/[_\-]+/g,' ').replace(/\s+/g,' ').trim(),out={esp:null,qtd:null,mat:null};
+  if(/inox|\b(304l?|316l?|430|201)\b|aisi/i.test(n))out.mat='inox';else if(/carbono|\b(1010|1020|1045|a36|sae)\b/i.test(n))out.mat='carbono';
+  let rest=n,m;
+  if((m=n.match(/(\d+(?:[.,]\d+)?)\s*mm(?![a-z])/i))){out.esp=num(m[1]);rest=rest.replace(m[0],' ');}
+  else if((m=n.match(/\besp(?:essura)?\.?\s*[=:]?\s*(\d+(?:[.,]\d+)?)/i))){out.esp=num(m[1]);rest=rest.replace(m[0],' ');}
+  else if((m=n.match(/(?:^|\s)(\d{1,2})\/(2|4|8|16)(?=\s|"|$|pol|in)/i))&&+m[1]<+m[2]){out.esp=+(m[1]/m[2]*25.4).toFixed(2);rest=rest.replace(m[0],' ');}
+  rest=rest.replace(/\d+(?:[.,]\d+)?\s*x\s*\d+(?:[.,]\d+)?(?:\s*x\s*\d+(?:[.,]\d+)?)?/gi,' ');
+  const P=[/\b(?:qtde?|qtd|quant(?:idade)?|qt)\.?\s*[=:]?\s*(\d+)/i,/(\d+)\s*(?:pcs?|p[cç]s?|pe[cç]as?|unid(?:ades?)?|un)(?=\s|$|[.,)])/i,/(?:^|\s)x\s*(\d+)(?=\s|$)/i,/(?:^|\s)(\d+)\s*x(?=\s|$)/i];
+  for(const re of P){const q=rest.match(re);if(q){const v=parseInt(q[1],10);if(v>=1&&v<=9999){out.qtd=v;break;}}}
+  return out;}
+
+function snap(mat,v){let best=null,bd=1e9;cfg[mat].forEach(r=>{const d=Math.abs(r[0]-v);if(d<bd){bd=d;best=r[0];}});return bd<=Math.max(0.2,v*0.06)?best:null;}
+function autoApply(it){
+  const r=parseNome(it.name),tg=[],bad=[];it.aM=it.aE=false;
+  if(r.mat){it.mat=r.mat;it.aM=true;tg.push(r.mat==='inox'?'inox':'carbono');}
+  if(r.esp!=null){const sn=snap(it.mat,r.esp);if(sn!=null){it.esp=sn;it.aE=true;it.aEv=r.esp;tg.push(String(sn).replace('.',',')+' mm');}
+    else bad.push('espessura '+String(r.esp).replace('.',',')+' mm não existe na tabela de '+NM[it.mat]+' (usando a padrão)');}
+  if(r.qtd){it.qtd=r.qtd;tg.push(r.qtd+' pç');}
+  it.note=(tg.length?'auto: '+tg.join(' · '):'auto: nada identificado no nome')+(bad.length?' · ⚠ '+bad.join('; '):'');
+}
+function renderTabelas(){
+  $('cmTabelas').innerHTML=['carbono','inox'].map(m=>`<div><b>${NM[m]}</b><table><thead><tr><th>Esp. mm</th><th>Veloc. m/min</th><th>Perfuração s</th><th>R$/kg</th><th></th></tr></thead><tbody>${
+   cfg[m].map((r,i)=>`<tr>${[0,1,2,3].map(c=>`<td><input data-m="${m}" data-i="${i}" data-c="${c}" value="${String(r[c]).replace('.',',')}" inputmode="decimal"></td>`).join('')}<td><button class="ghost sm" data-del="${m}:${i}">✕</button></td></tr>`).join('')
+  }</tbody></table><button class="sm" data-add="${m}" style="margin-top:6px">+ espessura</button></div>`).join('');
+  fillDefEsp();
+}
+function fillDefEsp(){
+  const m=$('cmDefMat').value, cur=$('cmDefEsp').value;
+  $('cmDefEsp').innerHTML=cfg[m].map(r=>`<option value="${r[0]}">${f(r[0],2).replace(/,?0+$/,'')} mm</option>`).join('');
+  if(cur) $('cmDefEsp').value=cur;
+}
+function espOpts(m,sel){return cfg[m].map(r=>`<option value="${r[0]}" ${Math.abs(r[0]-N(sel))<1e-9?'selected':''}>${String(r[0]).replace('.',',')}</option>`).join('')}
+
+function calc(it){
+  const r=row(it.mat,it.esp), v=r?r[1]:0, p=r?r[2]:0, k=r?r[3]:0, hora=N($(it.mat==='inox'?'cmHoraI':'cmHoraC').value), mg=1+N($('cmMargem').value)/100;
+  const tUn=(v>0?it.perim/1000/v:0)+it.furos*p/60;           // min por peça
+  const pUn=(cfg.base==='ret'&&it.rect>0?it.rect:it.area)*N(it.esp)*DENS[it.mat]/10000;             // kg por peça
+  const cMat=pUn*k, cCor=tUn/60*hora, un=(cMat+cCor)*mg;
+  return {ok:!!r&&v>0,tUn,pUn,cMat,cCor,un,pesoT:pUn*it.qtd,total:un*it.qtd};
+}
+function renderItens(){
+  $('cmItens').innerHTML=items.map((it,i)=>`<tr data-i="${i}"><td style="min-width:130px">${escapeHtml(it.name)}${it.note?`<div class="cm-auto">${escapeHtml(it.note)}</div>`:''}${it.warn?`<div class="cm-warn">⚠ ${escapeHtml(it.warn)}</div>`:''}</td>
+   <td><select data-k="mat"><option value="carbono" ${it.mat=='carbono'?'selected':''}>Carbono</option><option value="inox" ${it.mat=='inox'?'selected':''}>Inox</option></select></td>
+   <td><select data-k="esp">${espOpts(it.mat,it.esp)}</select></td>
+   <td style="width:60px"><input data-k="qtd" value="${it.qtd}" inputmode="numeric"></td>
+   <td class="o">${f(it.w,1)} × ${f(it.h,1)}</td><td class="o">${f(it.area,2)}</td><td class="o">${f(it.rect,2)}</td><td class="o">${f(it.perim,1)}</td><td class="o">${it.furos}</td>
+   <td class="o" data-o="t"></td><td class="o" data-o="p"></td><td class="o" data-o="u"></td><td class="o" data-o="T"></td>
+   <td><button class="ghost sm" data-rm="${i}">✕</button></td></tr>`).join('')||'<tr><td colspan="14" style="padding:14px;color:var(--muted)">Nenhum DXF importado ainda.</td></tr>';
+  update();
+}
+function update(){
+  const g={}, T={n:0,rect:0,area:0,perim:0,furos:0,t:0,peso:0,mat:0,cor:0,tot:0};
+  items.forEach((it,i)=>{
+    const c=calc(it), tr=$('cmItens').querySelector(`tr[data-i="${i}"]`);
+    if(tr){const set=(k,v)=>tr.querySelector(`[data-o="${k}"]`).textContent=v;
+      set('t',c.ok?hm(c.tUn):'sem veloc.');set('p',f(c.pesoT,3));set('u',fmtBRL(c.un));set('T',fmtBRL(c.total));}
+    const k=it.mat+'|'+it.esp, G=g[k]=g[k]||{mat:it.mat,esp:it.esp,n:0,rect:0,area:0,t:0,peso:0,cm:0,cc:0,tot:0};
+    G.n+=it.qtd;G.rect+=it.rect*it.qtd;G.area+=it.area*it.qtd;G.t+=c.tUn*it.qtd;G.peso+=c.pesoT;G.cm+=c.cMat*it.qtd;G.cc+=c.cCor*it.qtd;G.tot+=c.total;
+    T.n+=it.qtd;T.rect+=it.rect*it.qtd;T.area+=it.area*it.qtd;T.perim+=it.perim*it.qtd;T.furos+=it.furos*it.qtd;T.t+=c.tUn*it.qtd;T.peso+=c.pesoT;T.mat+=c.cMat*it.qtd;T.cor+=c.cCor*it.qtd;T.tot+=c.total;
+  });
+  $('cmResumo').innerHTML=Object.values(g).map(G=>`<tr><td>${NM[G.mat]}</td><td class="o">${G.esp} mm</td><td class="o">${G.n}</td><td class="o">${f(G.area,2)}</td><td class="o">${f(G.rect,2)}</td><td class="o">${hm(G.t)}</td><td class="o">${f(G.peso,3)}</td><td class="o">${fmtBRL(G.cm)}</td><td class="o">${fmtBRL(G.cc)}</td><td class="o"><b>${fmtBRL(G.tot)}</b></td></tr>`).join('');
+  const box=(l,v,c)=>`<div class="${c||''}"><small>${l}</small><b>${v}</b></div>`;
+  $('cmTot').innerHTML=box('Peças (qtd)',T.n)+box('Área real (c/ furos)',f(T.area,2)+' cm²')+box('Área retangular',f(T.rect,2)+' cm²')+box('Perímetro total',f(T.perim/1000,2)+' m')+box('Furos / perfurações',T.furos)+box('Tempo de corte',hm(T.t))+box('Peso total',f(T.peso,3)+' kg')+box('Custo material',fmtBRL(T.mat))+box('Custo corte',fmtBRL(T.cor))+box('Total do orçamento',fmtBRL(T.tot),'big');
+}
+
+$('cmTabelas').addEventListener('input',e=>{const t=e.target;if(t.dataset.m===undefined)return;cfg[t.dataset.m][t.dataset.i][t.dataset.c]=N(t.value);save();update();});
+$('cmTabelas').addEventListener('change',e=>{if(e.target.dataset.c==='0'){cfg[e.target.dataset.m].sort((a,b)=>a[0]-b[0]);save();renderTabelas();renderItens();}});
+$('cmTabelas').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.add){cfg[b.dataset.add].push([0,0,0,0]);}
+  else if(b.dataset.del){const[m,i]=b.dataset.del.split(':');cfg[m].splice(i,1);}
+  else return;
+  save();renderTabelas();renderItens();
+});
+$('cmItens').addEventListener('input',e=>{const t=e.target,i=t.closest('tr').dataset.i;if(t.dataset.k==='qtd'){items[i].qtd=Math.max(0,N(t.value));update();}});
+$('cmItens').addEventListener('change',e=>{const t=e.target,i=t.closest('tr').dataset.i;
+  if(t.dataset.k==='mat'){items[i].aM=items[i].aE=false;items[i].note='';items[i].mat=t.value;items[i].esp=cfg[t.value][0]?cfg[t.value][0][0]:0;renderItens();}
+  else if(t.dataset.k==='esp'){items[i].aE=false;items[i].esp=N(t.value);update();}});
+$('cmItens').addEventListener('click',e=>{const b=e.target.closest('[data-rm]');if(b){items.splice(b.dataset.rm,1);renderItens();}});
+$('cmDefMat').addEventListener('change',()=>{fillDefEsp();applyDef();});
+$('cmDefEsp').addEventListener('change',applyDef);
+function applyDef(){items.forEach(it=>{if(!it.aM){it.mat=$('cmDefMat').value;if(it.aE){const sn=snap(it.mat,it.aEv);if(sn!=null)it.esp=sn;}}if(!it.aE)it.esp=N($('cmDefEsp').value);});renderItens();}
+$('cmHoraC').addEventListener('input',()=>{cfg.horaC=$('cmHoraC').value;save();$('precoHoraLaser').value=cfg.horaC;$('precoHoraLaser').dispatchEvent(new Event('input'));update();});
+$('cmBase').addEventListener('change',()=>{cfg.base=$('cmBase').value;save();update();});
+$('cmHoraI').addEventListener('input',()=>{cfg.horaI=$('cmHoraI').value;save();update();});
+$('cmMargem').addEventListener('input',()=>{cfg.margem=$('cmMargem').value;save();update();});
+
+$('cmImport').addEventListener('click',()=>$('cmFiles').click());
+$('cmFiles').addEventListener('change',async e=>{
+  const files=[...e.target.files];e.target.value='';let bad=0;
+  for(const file of files){
+    try{
+      const txt=await new Promise((ok,no)=>{const r=new FileReader();r.onload=()=>ok(r.result);r.onerror=no;r.readAsText(file);});
+      const a=analyzeDxf(txt);
+      if(!(a.areaCm2>0)){bad++;}
+      items.push({name:file.name.replace(/\.dxf$/i,''),mat:$('cmDefMat').value,esp:N($('cmDefEsp').value),qtd:1,area:a.areaCm2,w:a.bboxW||0,h:a.bboxH||0,rect:a.bboxAreaCm2||0,perim:a.perimeterMm,furos:Math.max(0,a.loopCount||0),warn:(a.warnings||[]).join(' ')});if($('cmAuto').checked)autoApply(items[items.length-1]);
+    }catch(err){bad++;}
+  }
+  renderItens();toast(`${files.length-bad} de ${files.length} DXF importado(s)`+(bad?` — ${bad} com problema`:''));
+});
+$('cmAuto').addEventListener('change',()=>{cfg.auto=$('cmAuto').checked;save();});
+$('cmReparse').addEventListener('click',()=>{items.forEach(autoApply);renderItens();toast('Nomes reinterpretados');});
+$('cmClear').addEventListener('click',()=>{items=[];renderItens();});
+$('cmSend').addEventListener('click',()=>{
+  if(!items.length){toast('Importe ao menos um DXF');return;}
+  const semVel=items.filter(it=>!calc(it).ok).length;
+  if(semVel&&!confirm(semVel+' peça(s) sem velocidade de corte na tabela (tempo = 0). Enviar mesmo assim?'))return;
+  tbody.querySelectorAll('tr.item-row').forEach(tr=>{ // remove linhas vazias
+    if(!tr.querySelector('[data-f="nome"]').value.trim()&&!parseNum(tr.querySelector('[data-f="custo"]').value)){tr.nextElementSibling.remove();tr.remove();}});
+  items.forEach(it=>{const c=calc(it);
+    makeRow([it.name,NM[it.mat].replace('Aço ','').toUpperCase(),String(it.esp).replace('.',','),String(it.qtd),c.un.toFixed(2).replace('.',','),c.pesoT.toFixed(3).replace('.',',')]);});
+  recalcGrand();$('corteModal').classList.remove('open');
+  toast(items.length+' peça(s) enviada(s) ao orçamento');
+});
+$('btnCorte').addEventListener('click',()=>{$('cmHoraC').value=cfg.horaC||$('precoHoraLaser').value;$('cmHoraI').value=cfg.horaI;$('cmBase').value=cfg.base||'real';$('cmAuto').checked=cfg.auto!==false;$('cmMargem').value=cfg.margem||'0';$('corteModal').classList.add('open');});
+$('cmClose').addEventListener('click',()=>$('corteModal').classList.remove('open'));
+$('corteModal').addEventListener('mousedown',e=>{if(e.target.id==='corteModal')$('corteModal').classList.remove('open');});
+renderTabelas();renderItens();
+})();
+/* ================= FIM CALCULADORA DE CORTE ================= */
+</script>
+<script>
+/* ===== visual SaaS: navegação lateral, indicadores e ajuda recolhível ===== */
+(function(){
+const $=id=>document.getElementById(id);
+document.querySelectorAll('.side [data-go]').forEach(b=>b.addEventListener('click',()=>{
+  if(b.dataset.go==='top'){window.scrollTo({top:0,behavior:'smooth'});return;}
+  const t=$(b.dataset.go);if(t)t.click();}));
+const h=document.querySelector('.hint'),d=document.createElement('details');d.className='help';
+d.innerHTML='<summary>Como usar este editor</summary>';h.replaceWith(d);d.appendChild(h);
+const k=document.createElement('div');k.className='kpis';
+k.innerHTML='<div><small>Total do orçamento</small><b id="kTot">R$ 0,00</b></div><div><small>Itens</small><b id="kIt">0</b></div><div><small>Peso total</small><b id="kPe">0 kg</b></div><div><small>Valor médio do kg</small><b id="kKg">R$ 0,00</b></div>';
+document.querySelector('.wrap').insertBefore(k,$('sheet'));
+function upd(){$('kTot').textContent=$('grandTotal').textContent;$('kPe').textContent=$('pesoTotal').textContent+' kg';$('kKg').textContent=$('valorPorKg').textContent;
+  $('kIt').textContent=[...document.querySelectorAll('#itemsBody tr.item-row')].filter(r=>r.querySelector('[data-f="nome"]').value.trim()).length;}
+new MutationObserver(upd).observe($('sheet'),{subtree:true,childList:true,characterData:true});
+document.addEventListener('input',upd);upd();
+})();
+</script>
+</body>
+</html>
