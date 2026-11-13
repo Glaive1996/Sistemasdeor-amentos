@@ -238,8 +238,8 @@
   }
 
   /* ---------- calculadora de corte (modal) ---------- */
-  #corteModal{position:fixed;inset:0;background:rgba(20,22,28,.55);z-index:40;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
-  #corteModal.open{display:flex}
+  #corteModal,#savedModal,#clientsModal{position:fixed;inset:0;background:rgba(20,22,28,.55);z-index:40;display:none;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 12px}
+  #corteModal.open,#savedModal.open,#clientsModal.open{display:flex}
   .cm-box{background:var(--panel);border-radius:14px;width:100%;max-width:1080px;padding:24px 26px 26px;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);position:relative}
   .cm-box h2{font-family:'Space Grotesk',sans-serif;margin:0 0 4px;font-size:20px}
   .cm-box h4{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-dark);margin:20px 0 8px}
@@ -263,7 +263,7 @@
   .cm-tot .big{background:var(--ink);color:#fff}.cm-tot .big small{color:#bbb}
   .cm-scroll{overflow-x:auto}.cm-warn{color:#b3352f;font-size:11px}.cm-auto{font-size:11px;font-weight:600;color:var(--accent-dark);margin-top:2px}.cm-chk{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;margin:14px 0 2px;line-height:1.45;cursor:pointer}.cm-chk input{margin-top:3px}
   @media(max-width:760px){.cm-grid2{grid-template-columns:1fr}}
-  @media print{#corteModal{display:none !important}}
+  @media print{#corteModal,#savedModal,#clientsModal,.cl-tools{display:none !important}}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style id="saas-theme">
@@ -287,7 +287,7 @@ body{padding-left:244px;font-size:14px}
 .toolbar{background:rgba(255,255,255,.86);padding:11px 32px;border-bottom:1px solid var(--line)}
 .toolbar .brandmark{font-weight:600;font-size:13.5px;color:var(--muted);gap:8px}
 .toolbar .brandmark b{color:var(--ink);font-weight:700}
-.toolbar .actions>button:not(#btnCorte):not(#btnPdf){display:none}
+.toolbar .actions>button:not(#btnCorte):not(#btnPdf):not(#btnSalvar){display:none}
 .pill{font-size:11.5px;font-weight:700;color:#8a5a00;background:#fff3d6;border-radius:99px;padding:3px 10px}
 button{border-radius:8px;border-color:var(--line-strong);box-shadow:0 1px 0 rgba(20,30,50,.04)}
 button.primary{background:var(--accent);border-color:var(--accent-dark);box-shadow:0 1px 2px rgba(11,92,115,.35)}
@@ -322,7 +322,7 @@ tfoot td.lbl{font-weight:700;color:var(--muted)}tfoot td.amt{font-weight:800;fon
 .detail-wrap{background:#f8fafc}tr.detail-row td{background:#f8fafc}
 .addrow button{border-radius:10px;border-color:var(--line-strong)}
 /* modal */
-#corteModal{background:rgba(15,23,38,.6);backdrop-filter:blur(3px)}
+#corteModal,#savedModal,#clientsModal{background:rgba(15,23,38,.6);backdrop-filter:blur(3px)}.cl-form{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;background:#f6f8fb;border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}.cl-form label{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:700;color:var(--muted)}.cl-form .full{grid-column:1/-1}.cl-tools{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 8px}.cl-tools button{padding:4px 9px;font-size:12px}@media(max-width:700px){.cl-form{grid-template-columns:1fr}}.pill.ok{color:#0b5c73;background:#e1f4f8}.sv-row{display:flex;gap:12px;align-items:center;padding:11px 4px;border-bottom:1px solid var(--line)}.sv-row .n{flex:1;min-width:0}.sv-row .n b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sv-row .n small{color:var(--muted)}.sv-row .t{font-weight:800;white-space:nowrap}.sv-box{max-width:760px;margin:auto}.danger{background:#b3352f !important;color:#fff !important;border-color:#8f2722 !important}.cm-box input[readonly]{background:#f1f4f8;color:#5b667a;border-style:dashed}
 .cm-box{border-radius:16px;padding:28px 30px}
 .cm-box h2{font-family:'Manrope';font-weight:800;letter-spacing:-.02em;font-size:22px}
 .cm-box h4{text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink);margin:24px 0 8px}
@@ -336,11 +336,17 @@ tfoot td.lbl{font-weight:700;color:var(--muted)}tfoot td.amt{font-weight:800;fon
 <body>
 <aside class="side">
 <div class="logo"><i>C</i><div>CEKTEC<small>Orçamentos de corte</small></div></div>
-<div class="grp">Orçamento</div><button class="nav on" data-go="top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Editor</button><button class="nav " data-go="btnCorte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><circle cx="18" cy="16" r="3"/></svg>Calculadora de corte</button><div class="grp">Dados</div><button class="nav " data-go="btnPaste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>Colar do Excel</button><button class="nav " data-go="btnImportPdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V4m0 0-4 4m4-4 4 4M4 17v3h16v-3"/></svg>Importar PDF</button><div class="grp">Exportar</div><button class="nav " data-go="btnPdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Gerar PDF</button><button class="nav " data-go="btnExportXlsx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg>Excel (.xlsx)</button><button class="nav " data-go="btnExportCsv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16"/></svg>CSV</button><div class="grp">Ajustes</div><button class="nav " data-go="btnToggleValorKg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>Mostrar/ocultar Valor/Kg</button><button class="nav " data-go="btnClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6"/></svg>Limpar linhas</button><div class="foot">CEKTEC Perfilados · Chapecó - SC</div></aside>
+<div class="grp">Orçamento</div><button class="nav on" data-go="top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>Editor</button><button class="nav " data-go="btnSalvos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>Orçamentos salvos</button><button class="nav " data-go="btnClientes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>Clientes</button><button class="nav " data-go="btnCorte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h10M4 17h6"/><circle cx="18" cy="16" r="3"/></svg>Calculadora de corte</button><div class="grp">Dados</div><button class="nav " data-go="btnPaste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>Colar do Excel</button><button class="nav " data-go="btnImportPdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17V4m0 0-4 4m4-4 4 4M4 17v3h16v-3"/></svg>Importar PDF</button><div class="grp">Exportar</div><button class="nav " data-go="btnPdf"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Gerar PDF</button><button class="nav " data-go="btnExportXlsx"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg>Excel (.xlsx)</button><button class="nav " data-go="btnExportCsv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0-4-4m4 4 4-4M4 19h16"/></svg>CSV</button><div class="grp">Ajustes</div><button class="nav " data-go="btnToggleValorKg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>Mostrar/ocultar Valor/Kg</button><button class="nav " data-go="btnClear"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2m3 0-1 14H6L5 6"/></svg>Limpar linhas</button><div class="foot">CEKTEC Perfilados · Chapecó - SC</div></aside>
 
 <div class="toolbar">
-  <div class="brandmark"><span>Orçamentos</span><span>/</span><b>Editor</b><span class="pill">Rascunho</span></div>
+  <div class="brandmark"><span>Orçamentos</span><span>/</span><b>Editor</b><span class="pill" id="statusPill">Rascunho</span></div>
   <div class="actions">
+    <button id="btnSalvar" class="primary" title="Salvar este orçamento (Ctrl+S)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+      Salvar
+    </button>
+    <button id="btnSalvos" class="ghost" title="Orçamentos salvos">Salvos</button>
+    <button id="btnClientes" class="ghost" title="Cadastro de clientes">Clientes</button>
     <button id="btnCorte" class="primary" title="Tabela de espessuras, tempo de corte e importação de vários DXF">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
       Calculadora de corte
@@ -405,6 +411,7 @@ tfoot td.lbl{font-weight:700;color:var(--muted)}tfoot td.amt{font-weight:800;fon
       </div>
       <div class="panel">
         <h3>Cliente</h3>
+        <div class="cl-tools"><button id="clPuxar" class="primary" type="button">Puxar cliente salvo</button><button id="clCnpj" type="button">Buscar por CNPJ</button><button id="clSalvar" class="ghost" type="button">Salvar cliente</button></div>
         <div class="field-row"><span class="k">Cliente</span><span class="v" contenteditable="true">LBN ANDAIMES E ESCORAMENTOS LTDA.</span></div>
         <div class="field-row"><span class="k">Endereço</span><span class="v" contenteditable="true">Estrada ERS 331 - KM 03 - Linha 02 - Nº 3005 - Secção Dourado</span></div>
         <div class="field-row"><span class="k">CNPJ</span><span class="v" contenteditable="true">114.521.030/0001-09</span></div>
@@ -483,10 +490,12 @@ tfoot td.lbl{font-weight:700;color:var(--muted)}tfoot td.amt{font-weight:800;fon
   <div class="cm-top">
     <label>Hora laser CARBONO (R$/h)<input id="cmHoraC" inputmode="decimal" placeholder="0,00"></label>
     <label>Hora laser INOX (R$/h)<input id="cmHoraI" inputmode="decimal" placeholder="0,00"></label>
+    <label title="Usado quando o R$/kg da espessura na tabela estiver zerado">R$/kg Carbono<input id="cmKgC" inputmode="decimal" placeholder="0,00"></label>
+    <label title="Usado quando o R$/kg da espessura na tabela estiver zerado">R$/kg Inox<input id="cmKgI" inputmode="decimal" placeholder="0,00"></label>
     <label>Margem / impostos (%)<input id="cmMargem" inputmode="decimal" value="0"></label>
     <label>Peso e material calculados sobre<select id="cmBase" style="width:190px"><option value="real">Área real (c/ furos)</option><option value="ret">Área retangular</option></select></label>
   </div>
-  <h4>Tabela de espessuras</h4>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:20px 0 8px"><h4 style="margin:0">Tabela de espessuras e preços</h4><span id="cmLockMsg" class="cm-sub" style="margin:0;flex:1"></span><button id="cmLock">Salvar tabela</button></div>
   <div class="cm-grid2" id="cmTabelas"></div>
   <h4>Importar DXF</h4>
   <div class="cm-top">
@@ -504,6 +513,29 @@ tfoot td.lbl{font-weight:700;color:var(--muted)}tfoot td.amt{font-weight:800;fon
   <div class="cm-scroll"><table><thead><tr><th>Material</th><th>Esp.</th><th>Peças</th><th>Área real cm²</th><th>Área ret. cm²</th><th>Tempo corte</th><th>Peso kg</th><th>Material R$</th><th>Corte R$</th><th>Total R$</th></tr></thead><tbody id="cmResumo"></tbody></table></div>
   <div class="cm-tot" id="cmTot"></div>
   <div style="display:flex;gap:10px;margin-top:16px;justify-content:flex-end"><button id="cmSend" class="primary">Enviar para o orçamento ▸</button></div>
+</div></div>
+<div id="savedModal"><div class="cm-box sv-box">
+  <button class="ghost cm-close" id="svClose">✕ Fechar</button>
+  <h2>Orçamentos salvos</h2>
+  <p class="cm-sub">Os orçamentos ficam guardados neste navegador e neste computador. Use o backup para levar para outro computador ou garantir uma cópia.</p>
+  <div class="cm-top"><button id="svNovo" class="primary">+ Novo orçamento</button><button id="svExp">Exportar backup</button><button id="svImp" class="ghost">Importar backup</button><input type="file" id="svFile" accept=".json,application/json" style="display:none"></div>
+  <div id="svList" style="margin-top:12px"></div>
+</div></div>
+<div id="clientsModal"><div class="cm-box sv-box">
+  <button class="ghost cm-close" id="clClose">✕ Fechar</button>
+  <h2>Clientes</h2>
+  <p class="cm-sub">Cadastre o cliente uma vez e puxe os dados no orçamento. Digite o CNPJ e clique em <b>Buscar CNPJ</b> para preencher razão social, endereço e telefone pela Receita (precisa de internet).</p>
+  <div class="cm-top"><input id="clBusca" placeholder="Buscar por nome ou CNPJ" style="width:260px"><button id="clNovo" class="primary">+ Novo cliente</button></div>
+  <div class="cl-form" id="clForm" style="display:none">
+    <label>CNPJ<span style="display:flex;gap:6px"><input id="cfCnpj" inputmode="numeric" placeholder="00.000.000/0000-00"><button id="cfBuscar" type="button" style="white-space:nowrap">Buscar CNPJ</button></span></label>
+    <label>Razão social / nome<input id="cfNome"></label>
+    <label class="full">Endereço<input id="cfEnd"></label>
+    <label>Telefone<input id="cfTel"></label>
+    <label>E-mail<input id="cfEmail"></label>
+    <label>Inscrição estadual<input id="cfIe"></label>
+    <div class="full" style="display:flex;gap:8px;justify-content:flex-end"><button id="cfCancel" class="ghost" type="button">Cancelar</button><button id="cfSave" class="primary" type="button">Salvar cliente</button></div>
+  </div>
+  <div id="clList" style="margin-top:8px"></div>
 </div></div>
 <div id="toast"></div>
 
@@ -1594,7 +1626,8 @@ const def={hora:'',margem:'0',carbono:[[0.75,25,0.3,0],[1,20,0.4,0],[1.5,15,0.5,
 let cfg; try{cfg=JSON.parse(localStorage.getItem(KEY))}catch(e){} if(!cfg||!cfg.carbono) cfg=JSON.parse(JSON.stringify(def));
 if(!cfg.ver||cfg.ver<2){const add={carbono:[[1.2,17,0.45,0],[2.5,8,0.7,0],[12.7,1.2,4,0]],inox:[[1.2,15,0.5,0],[2.5,6,1,0],[12.7,0.4,8,0]]};
   for(const m in add){add[m].forEach(r=>{if(!cfg[m].some(x=>Math.abs(x[0]-r[0])<1e-9))cfg[m].push(r)});cfg[m].sort((a,b)=>a[0]-b[0]);}cfg.ver=2;}
-cfg.horaC=cfg.horaC||'';cfg.horaI=cfg.horaI||'';
+if(cfg.ver<3){if(!cfg.carbono.some(x=>Math.abs(x[0]-3.75)<1e-9)){cfg.carbono.push([3.75,4.8,1,0]);cfg.carbono.sort((a,b)=>a[0]-b[0]);}cfg.ver=3;}
+cfg.horaC=cfg.horaC||'';cfg.horaI=cfg.horaI||'';cfg.kgC=cfg.kgC||'';cfg.kgI=cfg.kgI||'';
 window.__horaInox=()=>parseNum(cfg.horaI);
 let items=[];
 const $=id=>document.getElementById(id), N=parseNum;
@@ -1626,11 +1659,16 @@ function autoApply(it){
   if(r.qtd){it.qtd=r.qtd;tg.push(r.qtd+' pç');}
   it.note=(tg.length?'auto: '+tg.join(' · '):'auto: nada identificado no nome')+(bad.length?' · ⚠ '+bad.join('; '):'');
 }
+function applyLock(){const L=!!cfg.travada;
+  document.querySelectorAll('#cmTabelas input,#cmHoraC,#cmHoraI,#cmKgC,#cmKgI').forEach(i=>i.readOnly=L);
+  document.querySelectorAll('#cmTabelas button').forEach(b=>b.disabled=L);
+  const bt=$('cmLock');bt.textContent=L?'Editar valores':'Salvar tabela';bt.className=L?'':'primary';
+  $('cmLockMsg').textContent=L?'Tabela salva'+(cfg.salvoEm?' em '+new Date(cfg.salvoEm).toLocaleString('pt-BR'):'')+' — valores travados.':'Editando: ajuste os valores e clique em Salvar tabela.';}
 function renderTabelas(){
   $('cmTabelas').innerHTML=['carbono','inox'].map(m=>`<div><b>${NM[m]}</b><table><thead><tr><th>Esp. mm</th><th>Veloc. m/min</th><th>Perfuração s</th><th>R$/kg</th><th></th></tr></thead><tbody>${
    cfg[m].map((r,i)=>`<tr>${[0,1,2,3].map(c=>`<td><input data-m="${m}" data-i="${i}" data-c="${c}" value="${String(r[c]).replace('.',',')}" inputmode="decimal"></td>`).join('')}<td><button class="ghost sm" data-del="${m}:${i}">✕</button></td></tr>`).join('')
   }</tbody></table><button class="sm" data-add="${m}" style="margin-top:6px">+ espessura</button></div>`).join('');
-  fillDefEsp();
+  fillDefEsp();applyLock();
 }
 function fillDefEsp(){
   const m=$('cmDefMat').value, cur=$('cmDefEsp').value;
@@ -1640,7 +1678,7 @@ function fillDefEsp(){
 function espOpts(m,sel){return cfg[m].map(r=>`<option value="${r[0]}" ${Math.abs(r[0]-N(sel))<1e-9?'selected':''}>${String(r[0]).replace('.',',')}</option>`).join('')}
 
 function calc(it){
-  const r=row(it.mat,it.esp), v=r?r[1]:0, p=r?r[2]:0, k=r?r[3]:0, hora=N($(it.mat==='inox'?'cmHoraI':'cmHoraC').value), mg=1+N($('cmMargem').value)/100;
+  const r=row(it.mat,it.esp), v=r?r[1]:0, p=r?r[2]:0, k=(r&&r[3]>0)?r[3]:N($(it.mat==='inox'?'cmKgI':'cmKgC').value), hora=N($(it.mat==='inox'?'cmHoraI':'cmHoraC').value), mg=1+N($('cmMargem').value)/100;
   const tUn=(v>0?it.perim/1000/v:0)+it.furos*p/60;           // min por peça
   const pUn=(cfg.base==='ret'&&it.rect>0?it.rect:it.area)*N(it.esp)*DENS[it.mat]/10000;             // kg por peça
   const cMat=pUn*k, cCor=tUn/60*hora, un=(cMat+cCor)*mg;
@@ -1690,6 +1728,9 @@ $('cmDefEsp').addEventListener('change',applyDef);
 function applyDef(){items.forEach(it=>{if(!it.aM){it.mat=$('cmDefMat').value;if(it.aE){const sn=snap(it.mat,it.aEv);if(sn!=null)it.esp=sn;}}if(!it.aE)it.esp=N($('cmDefEsp').value);});renderItens();}
 $('cmHoraC').addEventListener('input',()=>{cfg.horaC=$('cmHoraC').value;save();$('precoHoraLaser').value=cfg.horaC;$('precoHoraLaser').dispatchEvent(new Event('input'));update();});
 $('cmBase').addEventListener('change',()=>{cfg.base=$('cmBase').value;save();update();});
+$('cmKgC').addEventListener('input',()=>{cfg.kgC=$('cmKgC').value;save();update();});
+$('cmKgI').addEventListener('input',()=>{cfg.kgI=$('cmKgI').value;save();update();});
+$('cmLock').addEventListener('click',()=>{cfg.travada=!cfg.travada;if(cfg.travada)cfg.salvoEm=Date.now();save();applyLock();toast(cfg.travada?'Tabela salva':'Edição liberada');});
 $('cmHoraI').addEventListener('input',()=>{cfg.horaI=$('cmHoraI').value;save();update();});
 $('cmMargem').addEventListener('input',()=>{cfg.margem=$('cmMargem').value;save();update();});
 
@@ -1720,10 +1761,11 @@ $('cmSend').addEventListener('click',()=>{
   recalcGrand();$('corteModal').classList.remove('open');
   toast(items.length+' peça(s) enviada(s) ao orçamento');
 });
-$('btnCorte').addEventListener('click',()=>{$('cmHoraC').value=cfg.horaC||$('precoHoraLaser').value;$('cmHoraI').value=cfg.horaI;$('cmBase').value=cfg.base||'real';$('cmAuto').checked=cfg.auto!==false;$('cmMargem').value=cfg.margem||'0';$('corteModal').classList.add('open');});
+$('btnCorte').addEventListener('click',()=>{$('cmHoraC').value=cfg.horaC||$('precoHoraLaser').value;$('cmHoraI').value=cfg.horaI;$('cmBase').value=cfg.base||'real';$('cmKgC').value=cfg.kgC||'';$('cmKgI').value=cfg.kgI||'';applyLock();$('cmAuto').checked=cfg.auto!==false;$('cmMargem').value=cfg.margem||'0';$('corteModal').classList.add('open');});
 $('cmClose').addEventListener('click',()=>$('corteModal').classList.remove('open'));
 $('corteModal').addEventListener('mousedown',e=>{if(e.target.id==='corteModal')$('corteModal').classList.remove('open');});
 renderTabelas();renderItens();
+window.__cm={get:()=>items,set:a=>{items=a||[];renderItens();}};
 })();
 /* ================= FIM CALCULADORA DE CORTE ================= */
 </script>
@@ -1743,6 +1785,132 @@ function upd(){$('kTot').textContent=$('grandTotal').textContent;$('kPe').textCo
   $('kIt').textContent=[...document.querySelectorAll('#itemsBody tr.item-row')].filter(r=>r.querySelector('[data-f="nome"]').value.trim()).length;}
 new MutationObserver(upd).observe($('sheet'),{subtree:true,childList:true,characterData:true});
 document.addEventListener('input',upd);upd();
+})();
+</script>
+<script>
+/* ===== SALVAR / ABRIR ORÇAMENTOS (armazenamento do navegador) ===== */
+(function(){
+const $=id=>document.getElementById(id),K='cektec_orcamentos_v1',D='cektec_rascunho_v1',CF='cektec_corte_cfg_v1';
+const rd=k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}};
+const wr=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){toast('Não foi possível gravar: armazenamento do navegador bloqueado ou cheio.');return false}};
+let cur=null,last='';
+const vs=()=>[...document.querySelectorAll('.field-row .v')];
+const hm=()=>new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+function snap(){return{num:$('orcNum').textContent.trim(),campos:vs().map(e=>e.textContent),hora:$('precoHoraLaser').value,vel:$('velocidadeCorte').value,
+  linhas:[...document.querySelectorAll('#itemsBody tr.item-row')].map(tr=>['nome','material','esp','qtd','custo','peso'].map(f=>tr.querySelector('[data-f="'+f+'"]').value)),
+  calc:window.__cm?window.__cm.get():[]};}
+function load(d){
+  $('orcNum').textContent=d.num;vs().forEach((e,i)=>{if(d.campos&&d.campos[i]!==undefined)e.textContent=d.campos[i];});
+  $('precoHoraLaser').value=d.hora||'';$('velocidadeCorte').value=d.vel||'';
+  tbody.innerHTML='';(d.linhas&&d.linhas.length?d.linhas:[[]]).forEach(r=>makeRow(r));recalcGrand();
+  if(window.__cm)window.__cm.set(d.calc||[]);
+  last=JSON.stringify(snap());pill(false);
+}
+function pill(dirty,txt){const e=$('statusPill');e.textContent=txt||(dirty?'Alterações não salvas':(cur?'Salvo '+hm():'Rascunho'));e.classList.toggle('ok',!dirty&&!!cur);}
+function salvar(){
+  const L=rd(K)||{list:[]},d=snap();let it=L.list.find(x=>x.id===cur);
+  if(!it){cur='o'+Date.now();it={id:cur};L.list.push(it);}
+  it.nome='Nº '+d.num+' — '+(d.campos[7]||'sem cliente');it.quando=Date.now();it.total=$('grandTotal').textContent;it.data=d;
+  if(wr(K,L)){wr(D,{cur,data:d});last=JSON.stringify(d);pill(false);toast('Orçamento salvo');}
+}
+function tick(){const j=JSON.stringify(snap());if(j!==last){last=j;pill(true);wr(D,{cur,data:JSON.parse(j)});}}
+function lista(){
+  const L=(rd(K)||{list:[]}).list.sort((a,b)=>b.quando-a.quando);
+  $('svList').innerHTML=L.map(o=>'<div class="sv-row"><div class="n"><b>'+escapeHtml(o.nome)+(o.id===cur?' (aberto)':'')+'</b><small>'+new Date(o.quando).toLocaleString('pt-BR')+'</small></div><div class="t">'+escapeHtml(o.total||'')+'</div><button data-a="o:'+o.id+'">Abrir</button><button class="ghost" data-a="x:'+o.id+'">Excluir</button></div>').join('')||'<p class="cm-sub" style="padding:14px 4px">Nenhum orçamento salvo ainda. Clique em Salvar no topo.</p>';
+}
+const dirty=()=>JSON.stringify(snap())!==last;
+function armed(b,txt){if(b.dataset.arm){delete b.dataset.arm;return true;}
+  const old=b.textContent;b.dataset.arm='1';b.textContent=txt;b.classList.add('danger');
+  setTimeout(()=>{if(b.dataset.arm){delete b.dataset.arm;b.textContent=old;b.classList.remove('danger');}},4000);return false;}
+const conf=()=>!dirty()||confirm('Há alterações não salvas. Descartar?');
+$('btnSalvar').addEventListener('click',salvar);
+$('btnSalvos').addEventListener('click',()=>{lista();$('savedModal').classList.add('open');});
+$('svClose').addEventListener('click',()=>$('savedModal').classList.remove('open'));
+$('savedModal').addEventListener('mousedown',e=>{if(e.target.id==='savedModal')$('savedModal').classList.remove('open');});
+$('svList').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const[a,id]=b.dataset.a.split(':');const L=rd(K)||{list:[]};
+  if(a==='o'){if(dirty()&&!armed(b,'Descartar alterações e abrir?'))return;const o=L.list.find(x=>x.id===id);if(o){cur=id;load(o.data);wr(D,{cur,data:o.data});pill(false,'Aberto: '+o.nome);$('savedModal').classList.remove('open');}}
+  else if(armed(b,'Confirmar exclusão')){L.list=L.list.filter(x=>x.id!==id);wr(K,L);if(cur===id)cur=null;lista();}});
+$('svNovo').addEventListener('click',()=>{if(dirty()&&!armed($('svNovo'),'Descartar alterações e criar novo?'))return;const d=snap(),n=parseInt(d.num,10);const t=new Date().toLocaleDateString('pt-BR');
+  d.num=isNaN(n)?d.num:String(n+1);d.campos=d.campos.map((v,i)=>i>=7&&i<=10?'':(i===11?t:(i===12?'':v)));d.linhas=[];d.calc=[];cur=null;load(d);wr(D,{cur,data:d});pill(true,'Novo orçamento');$('savedModal').classList.remove('open');});
+$('svExp').addEventListener('click',()=>{const o={k:rd(K)||{list:[]},cfg:rd(CF),cli:rd('cektec_clientes_v1')};const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(o)],{type:'application/json'}));a.download='backup-orcamentos-cektec-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);});
+$('svImp').addEventListener('click',()=>$('svFile').click());
+$('svFile').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const r=new FileReader();
+  r.onload=()=>{try{const o=JSON.parse(r.result),L=rd(K)||{list:[]};(o.k.list||[]).forEach(x=>{if(!L.list.some(y=>y.id===x.id))L.list.push(x);});
+    wr(K,L);if(o.cfg)wr(CF,o.cfg);if(o.cli){const C=rd('cektec_clientes_v1')||{list:[]};(o.cli.list||[]).forEach(x=>{if(!C.list.some(y=>y.id===x.id))C.list.push(x);});wr('cektec_clientes_v1',C);}lista();toast('Backup importado ('+(o.k.list||[]).length+' orçamento(s)). Recarregue a página para aplicar a tabela de espessuras.');}catch(err){toast('Arquivo de backup inválido');}};r.readAsText(f);});
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();salvar();}});
+const dr=rd(D);if(dr&&dr.data){cur=dr.cur||null;try{load(dr.data);pill(false,cur?'Rascunho restaurado':'Rascunho');}catch(e){}}
+else last=JSON.stringify(snap());
+setInterval(tick,1500);
+})();
+</script>
+<script>
+/* ===== CADASTRO DE CLIENTES + CONSULTA DE CNPJ ===== */
+(function(){
+const $=id=>document.getElementById(id),KC='cektec_clientes_v1';
+const rd=()=>{try{return JSON.parse(localStorage.getItem(KC))||{list:[]}}catch(e){return{list:[]}}};
+const wr=v=>{try{localStorage.setItem(KC,JSON.stringify(v));return true}catch(e){toast('Não foi possível gravar o cliente (armazenamento bloqueado).');return false}};
+const dg=s=>String(s||'').replace(/\D/g,'');
+const fmtCnpj=s=>{const d=dg(s);return d.length===14?d.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/,'$1.$2.$3/$4-$5'):String(s||'')};
+function okCnpj(c){c=dg(c);if(c.length!==14||/^(\d)\1+$/.test(c))return false;
+  const f=n=>{let t=0,p=n-7;for(let i=0;i<n;i++){t+=+c[i]*p--;if(p<2)p=9;}const r=t%11;return r<2?0:11-r;};return f(12)===+c[12]&&f(13)===+c[13];}
+const tc=s=>String(s||'').toLowerCase().replace(/(^|[\s\-\/(])([a-zà-ú])/g,(m,a,b)=>a+b.toUpperCase()).replace(/\b(De|Da|Do|Das|Dos|E)\b/g,x=>x.toLowerCase());
+const fmtTel=s=>{const d=dg(s);return d.length===10?d.replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3'):d.length===11?d.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3'):String(s||'')};
+function monta(tipo,log,num,compl,bairro,cid,uf,cep){tipo=tc(tipo);log=tc(log);
+  const rua=(tipo&&!log.toLowerCase().startsWith(tipo.toLowerCase())?tipo+' ':'')+log,n=num?(String(num).toUpperCase()==='S/N'?'S/N':num):'';
+  const c=dg(cep);return [rua+(n?', '+n:''),tc(compl),tc(bairro),(tc(cid)+(uf?'/'+uf:'')).replace(/^\//,''),c.length===8?'CEP '+c.slice(0,5)+'-'+c.slice(5):''].filter(Boolean).join(' - ');}
+const mapB=j=>({nome:j.razao_social||j.nome_fantasia||'',end:monta(j.descricao_tipo_de_logradouro,j.logradouro,j.numero,j.complemento,j.bairro,j.municipio,j.uf,j.cep),tel:fmtTel(j.ddd_telefone_1),email:String(j.email||'').toLowerCase(),ie:''});
+const mapW=j=>{const e=j.estabelecimento||{},ie=(e.inscricoes_estaduais||[])[0];return{nome:j.razao_social||'',end:monta(e.tipo_logradouro,e.logradouro,e.numero,e.complemento,e.bairro,e.cidade&&e.cidade.nome,e.estado&&e.estado.sigla,e.cep),tel:fmtTel((e.ddd1||'')+(e.telefone1||'')),email:String(e.email||'').toLowerCase(),ie:ie?ie.inscricao_estadual:''};};
+async function consulta(c){
+  const get=async u=>{const ac=new AbortController(),t=setTimeout(()=>ac.abort(),10000);try{return await fetch(u,{signal:ac.signal});}finally{clearTimeout(t);}};
+  for(const [u,m] of [['https://brasilapi.com.br/api/cnpj/v1/'+c,mapB],['https://publica.cnpj.ws/cnpj/'+c,mapW]]){
+    try{const r=await get(u);if(r.ok)return m(await r.json());if(r.status===404)throw new Error('nf');}catch(e){if(e.message==='nf')throw e;}}
+  throw new Error('off');}
+async function buscar(cnpjTxt){
+  const c=dg(cnpjTxt);if(c.length!==14){toast('Digite um CNPJ com 14 números');return null;}
+  if(!okCnpj(c)){toast('CNPJ inválido (dígito verificador não confere)');return null;}
+  toast('Consultando CNPJ…');
+  try{const r=await consulta(c);r.cnpj=fmtCnpj(c);return r;}
+  catch(e){toast(e.message==='nf'?'CNPJ não encontrado na base da Receita':'Não foi possível consultar agora (sem internet ou serviço fora do ar). Preencha manualmente.');return null;}}
+const vs=()=>[...document.querySelectorAll('.field-row .v')];
+const setV=(el,t)=>{el.textContent=t;el.dispatchEvent(new Event('input',{bubbles:true}));};
+function usar(c){const v=vs();setV(v[7],c.nome||'');setV(v[8],c.end||'');setV(v[9],fmtCnpj(c.cnpj));setV(v[10],c.tel||'');}
+function armed(b,txt){if(b.dataset.arm){delete b.dataset.arm;return true;}const o=b.textContent;b.dataset.arm='1';b.textContent=txt;b.classList.add('danger');
+  setTimeout(()=>{if(b.dataset.arm){delete b.dataset.arm;b.textContent=o;b.classList.remove('danger');}},4000);return false;}
+let eid=null;
+function lista(){
+  const q=$('clBusca').value.trim().toLowerCase(),qd=dg(q);
+  const L=rd().list.filter(c=>!q||(c.nome||'').toLowerCase().includes(q)||(qd&&dg(c.cnpj).includes(qd))).sort((a,b)=>(a.nome||'').localeCompare(b.nome||'','pt-BR'));
+  $('clList').innerHTML=L.map(c=>'<div class="sv-row"><div class="n"><b>'+escapeHtml(c.nome||'(sem nome)')+'</b><small>'+escapeHtml([fmtCnpj(c.cnpj),c.tel].filter(Boolean).join(' · '))+'</small></div><button class="primary" data-a="u:'+c.id+'">Usar</button><button data-a="e:'+c.id+'">Editar</button><button class="ghost" data-a="x:'+c.id+'">Excluir</button></div>').join('')
+   ||'<p class="cm-sub" style="padding:14px 4px">'+(q?'Nenhum cliente encontrado.':'Nenhum cliente cadastrado ainda. Clique em + Novo cliente.')+'</p>';}
+function form(c){eid=c?c.id:null;c=c||{};$('clForm').style.display='grid';
+  $('cfCnpj').value=fmtCnpj(c.cnpj||'');$('cfNome').value=c.nome||'';$('cfEnd').value=c.end||'';$('cfTel').value=c.tel||'';$('cfEmail').value=c.email||'';$('cfIe').value=c.ie||'';$('cfCnpj').focus();}
+function upsert(d){ // d: {nome,cnpj,end,tel,email,ie}
+  const R=rd(),c=dg(d.cnpj);let it=(eid&&R.list.find(x=>x.id===eid))||(c&&R.list.find(x=>dg(x.cnpj)===c));
+  const novo=!it;if(novo){it={id:'c'+Date.now()};R.list.push(it);}
+  Object.assign(it,d,{cnpj:fmtCnpj(d.cnpj)});if(wr(R))return novo?'novo':'atual';return null;}
+$('btnClientes').addEventListener('click',()=>{lista();$('clientsModal').classList.add('open');});
+$('clPuxar').addEventListener('click',()=>$('btnClientes').click());
+$('clClose').addEventListener('click',()=>$('clientsModal').classList.remove('open'));
+$('clientsModal').addEventListener('mousedown',e=>{if(e.target.id==='clientsModal')$('clientsModal').classList.remove('open');});
+$('clBusca').addEventListener('input',lista);
+$('clNovo').addEventListener('click',()=>form(null));
+$('cfCancel').addEventListener('click',()=>{$('clForm').style.display='none';eid=null;});
+$('cfBuscar').addEventListener('click',async()=>{const r=await buscar($('cfCnpj').value);if(!r)return;
+  $('cfCnpj').value=r.cnpj;$('cfNome').value=r.nome;$('cfEnd').value=r.end;if(r.tel)$('cfTel').value=r.tel;if(r.email)$('cfEmail').value=r.email;if(r.ie)$('cfIe').value=r.ie;toast('Dados preenchidos — confira e salve');});
+$('cfSave').addEventListener('click',()=>{const d={nome:$('cfNome').value.trim(),cnpj:$('cfCnpj').value.trim(),end:$('cfEnd').value.trim(),tel:$('cfTel').value.trim(),email:$('cfEmail').value.trim(),ie:$('cfIe').value.trim()};
+  if(!d.nome){toast('Informe o nome / razão social');return;}
+  const r=upsert(d);if(!r)return;$('clForm').style.display='none';eid=null;lista();
+  toast(r==='novo'?'Cliente cadastrado':'Cliente atualizado'+(dg(d.cnpj)&&!okCnpj(d.cnpj)?' (atenção: CNPJ com dígito verificador inválido)':''));});
+$('clList').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b)return;const[a,id]=b.dataset.a.split(':'),R=rd(),c=R.list.find(x=>x.id===id);if(!c)return;
+  if(a==='u'){usar(c);$('clientsModal').classList.remove('open');toast('Cliente aplicado ao orçamento');}
+  else if(a==='e')form(c);
+  else if(armed(b,'Confirmar exclusão')){R.list=R.list.filter(x=>x.id!==id);wr(R);lista();toast('Cliente excluído');}});
+$('clCnpj').addEventListener('click',async()=>{const r=await buscar(vs()[9].textContent);if(!r)return;usar(r);toast('Dados do CNPJ preenchidos. Use "Salvar cliente" para cadastrar.');});
+$('clSalvar').addEventListener('click',()=>{const v=vs(),d={nome:v[7].textContent.trim(),end:v[8].textContent.trim(),cnpj:v[9].textContent.trim(),tel:v[10].textContent.trim()};
+  if(!d.nome){toast('Preencha o nome do cliente primeiro');return;}eid=null;const old=rd().list.find(x=>dg(x.cnpj)&&dg(x.cnpj)===dg(d.cnpj));
+  const r=upsert(Object.assign({email:old?old.email:'',ie:old?old.ie:''},d));if(r)toast(r==='novo'?'Cliente cadastrado':'Cadastro do cliente atualizado');});
+window.__cli={okCnpj,fmtCnpj,monta,tc,fmtTel};
 })();
 </script>
 </body>
